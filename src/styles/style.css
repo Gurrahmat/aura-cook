@@ -1,0 +1,754 @@
+/* ==========================================================================
+   AuraCook – Modern Ambient Kitchen Companion Stylesheet
+   Theme: Warm Luxury Kitchen (Terracotta, Deep Sage, Soft Cream, Golden Amber, Dark Cocoa)
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  /* Color Palette */
+  --c-terracotta: #E07A5F;
+  --c-terracotta-dark: #C85F45;
+  --c-terracotta-light: #F4A261;
+  --c-sage: #3D405B;
+  --c-sage-dark: #2B2D42;
+  --c-sage-light: #575A7B;
+  --c-cream: #F8F5EE;
+  --c-cream-card: #FAF7F2;
+  --c-amber: #F2CC8F;
+  --c-amber-glow: rgba(242, 204, 143, 0.4);
+  --c-cocoa: #1E1B18;
+  --c-cocoa-light: #2D2926;
+  --c-success: #2A9D8F;
+  --c-warning: #E76F51;
+  --c-danger: #D62828;
+  
+  /* Text colors */
+  --text-main: #2D2926;
+  --text-muted: #6C757D;
+  --text-light: #F8F5EE;
+  
+  /* Glassmorphism & Elevation */
+  --glass-bg: rgba(255, 255, 255, 0.75);
+  --glass-dark-bg: rgba(30, 27, 24, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.4);
+  --glass-dark-border: rgba(255, 255, 255, 0.1);
+  --glass-blur: blur(16px);
+  
+  --shadow-sm: 0 4px 12px rgba(30, 27, 24, 0.05);
+  --shadow-md: 0 8px 24px rgba(30, 27, 24, 0.08);
+  --shadow-lg: 0 16px 40px rgba(30, 27, 24, 0.12);
+  --shadow-glow: 0 0 25px rgba(224, 122, 95, 0.25);
+  
+  /* Fonts */
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* Transitions */
+  --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-bounce: 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* --- Dark Mode Overrides --- */
+[data-theme="dark"] {
+  --c-cream: #181614;
+  --c-cream-card: #23201D;
+  --text-main: #F4F1DE;
+  --text-muted: #A0A0A0;
+  --glass-bg: rgba(35, 32, 29, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.6);
+}
+
+/* Base Styles */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--c-cream);
+  color: var(--text-main);
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  transition: background-color var(--transition-normal), color var(--transition-normal);
+  padding-bottom: 110px; /* Space for ambient player bar */
+  overflow-x: hidden;
+}
+
+h1, h2, h3, .font-serif {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Glassmorphism utility */
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  box-shadow: var(--shadow-md);
+}
+
+.glass-card {
+  background: var(--c-cream-card);
+  border: 1px solid rgba(224, 122, 95, 0.12);
+  border-radius: 18px;
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal), border-color var(--transition-normal);
+}
+
+.glass-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg), var(--shadow-glow);
+  border-color: var(--c-terracotta-light);
+}
+
+/* --- Header & Navigation --- */
+.navbar-auracook {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-bottom: 1px solid var(--glass-border);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  padding: 0.85rem 1.5rem;
+}
+
+.navbar-brand-auracook {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: var(--font-serif);
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--c-terracotta);
+}
+
+.navbar-brand-auracook i {
+  font-size: 1.8rem;
+  color: var(--c-terracotta);
+  animation: pulse-warm 3s infinite ease-in-out;
+}
+
+.nav-link-auracook {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text-main);
+  padding: 0.5rem 1rem !important;
+  border-radius: 12px;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.nav-link-auracook:hover,
+.nav-link-auracook.active {
+  color: var(--c-terracotta);
+  background: rgba(224, 122, 95, 0.1);
+}
+
+.nav-link-auracook.active {
+  font-weight: 700;
+}
+
+.badge-timer-count {
+  background-color: var(--c-terracotta);
+  color: white;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  padding: 2px 8px;
+  font-weight: 700;
+}
+
+/* --- Hero Banner --- */
+.hero-auracook {
+  background: linear-gradient(135deg, rgba(61, 64, 91, 0.92) 0%, rgba(30, 27, 24, 0.95) 100%),
+              url('https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1600&q=80');
+  background-size: cover;
+  background-position: center;
+  border-radius: 24px;
+  color: var(--c-cream);
+  padding: 3.5rem 2.5rem;
+  margin-top: 1.5rem;
+  margin-bottom: 2.5rem;
+  box-shadow: var(--shadow-lg);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-auracook::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, var(--c-amber-glow) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(242, 204, 143, 0.2);
+  border: 1px solid var(--c-amber);
+  color: var(--c-amber);
+  padding: 0.4rem 1rem;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+
+/* --- Recipe Cards --- */
+.recipe-card-img-wrapper {
+  position: relative;
+  height: 210px;
+  border-top-left-radius: 18px;
+  border-top-right-radius: 18px;
+  overflow: hidden;
+}
+
+.recipe-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--transition-normal);
+}
+
+.glass-card:hover .recipe-card-img {
+  transform: scale(1.05);
+}
+
+.recipe-badge-time {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  background: rgba(30, 27, 24, 0.8);
+  backdrop-filter: blur(8px);
+  color: #F8F5EE;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.recipe-badge-pantry {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  backdrop-filter: blur(8px);
+}
+
+.badge-match-high {
+  background: rgba(42, 157, 143, 0.9);
+  color: white;
+}
+
+.badge-match-med {
+  background: rgba(242, 204, 143, 0.9);
+  color: #1E1B18;
+}
+
+.badge-match-low {
+  background: rgba(224, 122, 95, 0.9);
+  color: white;
+}
+
+.recipe-card-body {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  height: calc(100% - 210px);
+}
+
+.recipe-meta-icons {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 0.75rem;
+}
+
+.tag-pill {
+  display: inline-block;
+  background: rgba(61, 64, 91, 0.08);
+  color: var(--c-sage);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 12px;
+  margin-right: 4px;
+  margin-bottom: 6px;
+}
+
+/* --- Ambient Sound Player Bar ("The Vibe Dock") --- */
+.vibe-dock {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 32px);
+  max-width: 980px;
+  z-index: 1050;
+  background: rgba(30, 27, 24, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 24px;
+  padding: 0.85rem 1.5rem;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.4), 0 0 20px rgba(224, 122, 95, 0.15);
+  color: #F8F5EE;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  transition: all var(--transition-normal);
+}
+
+.vibe-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.vibe-icon-wrapper {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--c-terracotta), var(--c-terracotta-dark));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  box-shadow: 0 4px 12px rgba(224, 122, 95, 0.4);
+}
+
+.vibe-icon-wrapper.playing {
+  animation: pulse-glow 2s infinite ease-in-out;
+}
+
+.vibe-title {
+  font-weight: 700;
+  font-size: 0.95rem;
+  margin-bottom: 2px;
+}
+
+.vibe-subtitle {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.vibe-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.btn-vibe-play {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: var(--c-amber);
+  color: var(--c-cocoa);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: transform var(--transition-bounce), background var(--transition-fast);
+}
+
+.btn-vibe-play:hover {
+  transform: scale(1.1);
+  background: #FFE3B3;
+}
+
+.vibe-soundscape-select {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  border-radius: 12px;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  outline: none;
+}
+
+.vibe-soundscape-select option {
+  background: #1E1B18;
+  color: white;
+}
+
+.vibe-volume-slider {
+  width: 90px;
+  accent-color: var(--c-terracotta);
+  cursor: pointer;
+}
+
+/* Sound Wave Equalizer Animation */
+.equalizer {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 18px;
+}
+
+.eq-bar {
+  width: 3px;
+  background: var(--c-amber);
+  border-radius: 3px;
+  height: 4px;
+  transition: height 0.2s ease;
+}
+
+.equalizer.playing .eq-bar:nth-child(1) { animation: eq-wave 1.2s infinite ease-in-out; }
+.equalizer.playing .eq-bar:nth-child(2) { animation: eq-wave 0.9s infinite ease-in-out 0.2s; }
+.equalizer.playing .eq-bar:nth-child(3) { animation: eq-wave 1.4s infinite ease-in-out 0.4s; }
+.equalizer.playing .eq-bar:nth-child(4) { animation: eq-wave 1.0s infinite ease-in-out 0.1s; }
+
+@keyframes eq-wave {
+  0%, 100% { height: 4px; }
+  50% { height: 18px; }
+}
+
+/* --- Multi-Timer Drawer & Overlay --- */
+.timer-drawer-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 1090;
+  opacity: 0;
+  visibility: hidden;
+  transition: all var(--transition-normal);
+}
+
+.timer-drawer-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.timer-drawer {
+  position: fixed;
+  top: 0;
+  right: -420px;
+  width: 100%;
+  max-width: 400px;
+  height: 100vh;
+  background: var(--c-cream-card);
+  box-shadow: -8px 0 32px rgba(0, 0, 0, 0.2);
+  z-index: 1100;
+  transition: right var(--transition-normal);
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem;
+}
+
+.timer-drawer.active {
+  right: 0;
+}
+
+.timer-card {
+  background: var(--glass-bg);
+  border: 1px solid rgba(224, 122, 95, 0.2);
+  border-radius: 16px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+}
+
+.timer-card.finished {
+  animation: pulse-alert 1s infinite alternate;
+  border-color: var(--c-danger);
+}
+
+.timer-display-time {
+  font-family: var(--font-sans);
+  font-size: 1.75rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  color: var(--c-sage-dark);
+}
+
+.timer-progress-bg {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 4px;
+  background: var(--c-terracotta);
+  transition: width 1s linear;
+}
+
+/* --- Immersive Cooking Mode View (`cooking.html`) --- */
+.cooking-container {
+  max-width: 1000px;
+  margin: 2rem auto;
+}
+
+.cooking-hero-card {
+  background: linear-gradient(135deg, var(--c-sage-dark), #1A1C29);
+  color: #F8F5EE;
+  border-radius: 28px;
+  padding: 2.5rem;
+  box-shadow: var(--shadow-lg);
+  margin-bottom: 2rem;
+}
+
+.cooking-step-card {
+  background: var(--c-cream-card);
+  border: 2px solid rgba(224, 122, 95, 0.2);
+  border-radius: 28px;
+  padding: 3rem 2.5rem;
+  box-shadow: var(--shadow-lg);
+  min-height: 380px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+}
+
+.step-number-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: var(--c-terracotta);
+  color: white;
+  font-weight: 800;
+  font-size: 1.4rem;
+  box-shadow: 0 4px 14px rgba(224, 122, 95, 0.4);
+}
+
+.step-instruction-text {
+  font-size: 1.65rem;
+  line-height: 1.5;
+  font-weight: 600;
+  color: var(--text-main);
+  margin: 1.5rem 0;
+}
+
+.step-tools-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-bottom: 1.5rem;
+}
+
+.step-tool-tag {
+  background: rgba(242, 204, 143, 0.3);
+  border: 1px solid var(--c-amber);
+  color: #4A3E2C;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 6px 14px;
+  border-radius: 20px;
+}
+
+/* Voice Assistant Pill Widget */
+.voice-assistant-bar {
+  background: rgba(61, 64, 91, 0.08);
+  border: 1.5px solid rgba(61, 64, 91, 0.2);
+  border-radius: 20px;
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 1.5rem;
+}
+
+.voice-mic-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--c-sage);
+  color: white;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+}
+
+.voice-mic-btn.listening {
+  background: var(--c-terracotta);
+  animation: pulse-mic 1.2s infinite ease-in-out;
+  box-shadow: 0 0 20px rgba(224, 122, 95, 0.6);
+}
+
+/* --- Digital Pantry Cards & Badges --- */
+.pantry-status-badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.status-in-stock {
+  background: rgba(42, 157, 143, 0.15);
+  color: #2A9D8F;
+  border: 1px solid #2A9D8F;
+}
+
+.status-low-stock {
+  background: rgba(231, 111, 81, 0.15);
+  color: #E76F51;
+  border: 1px solid #E76F51;
+}
+
+.status-out-stock {
+  background: rgba(214, 40, 40, 0.15);
+  color: #D62828;
+  border: 1px solid #D62828;
+}
+
+/* Custom Buttons */
+.btn-auracook-primary {
+  background: var(--c-terracotta);
+  color: white;
+  border: none;
+  font-weight: 700;
+  border-radius: 14px;
+  padding: 0.65rem 1.4rem;
+  transition: all var(--transition-fast);
+  box-shadow: 0 4px 14px rgba(224, 122, 95, 0.3);
+}
+
+.btn-auracook-primary:hover {
+  background: var(--c-terracotta-dark);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(224, 122, 95, 0.45);
+}
+
+.btn-auracook-secondary {
+  background: rgba(61, 64, 91, 0.1);
+  color: var(--c-sage);
+  border: 1px solid rgba(61, 64, 91, 0.2);
+  font-weight: 700;
+  border-radius: 14px;
+  padding: 0.65rem 1.4rem;
+  transition: all var(--transition-fast);
+}
+
+.btn-auracook-secondary:hover {
+  background: var(--c-sage);
+  color: white;
+}
+
+/* Toast Notifications Container */
+.toast-container-auracook {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 1200;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.auracook-toast {
+  background: var(--c-cocoa);
+  color: white;
+  border-left: 4px solid var(--c-terracotta);
+  padding: 1rem 1.25rem;
+  border-radius: 14px;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 280px;
+  animation: slide-toast 0.3s ease-out forwards;
+}
+
+/* Animations */
+@keyframes pulse-warm {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.08); opacity: 0.85; }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 4px 12px rgba(224, 122, 95, 0.4); }
+  50% { box-shadow: 0 0 25px rgba(224, 122, 95, 0.85); }
+}
+
+@keyframes pulse-mic {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.12); }
+}
+
+@keyframes pulse-alert {
+  0% { box-shadow: 0 0 0 rgba(214, 40, 40, 0); }
+  100% { box-shadow: 0 0 20px rgba(214, 40, 40, 0.6); }
+}
+
+@keyframes slide-toast {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .vibe-dock {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 0.85rem 1rem;
+    gap: 0.75rem;
+    bottom: 10px;
+  }
+  
+  .vibe-controls {
+    justify-content: space-between;
+  }
+
+  .cooking-step-card {
+    padding: 1.75rem 1.25rem;
+    min-height: 320px;
+  }
+
+  .step-instruction-text {
+    font-size: 1.25rem;
+  }
+
+  .hero-auracook {
+    padding: 2rem 1.25rem;
+  }
+}
