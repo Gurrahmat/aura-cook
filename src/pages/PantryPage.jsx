@@ -275,41 +275,44 @@ export const PantryPage = () => {
               <form onSubmit={handleSubmit}>
                 <div className="modal-body p-4">
                   <div className="mb-3">
-                    <label className="form-label font-sans fw-bold small">Select or Type Ingredient Name</label>
+                    <label className="form-label font-sans fw-bold small">Ingredient Name</label>
                     <select 
-                      className="form-select form-select-sm mb-2"
-                      value=""
+                      className="form-select"
+                      required
+                      value={COMMON_INGREDIENTS.some(i => i.name === formName) ? formName : (formName ? 'Custom' : '')}
                       onChange={(e) => {
-                        const selected = COMMON_INGREDIENTS.find(i => i.name === e.target.value);
-                        if (selected) {
-                          setFormName(selected.name);
-                          setFormCat(selected.category);
-                          if (selected.unit) setFormUnit(selected.unit);
+                        const val = e.target.value;
+                        if (val === 'Custom') {
+                          setFormName('');
+                        } else {
+                          setFormName(val);
+                          const match = COMMON_INGREDIENTS.find(i => i.name === val);
+                          if (match) {
+                            if (match.category) setFormCat(match.category);
+                            if (match.unit) setFormUnit(match.unit);
+                          }
                         }
                       }}
                     >
-                      <option value="" disabled>-- Quick Select from Database --</option>
+                      <option value="" disabled>-- Select Ingredient --</option>
                       {COMMON_INGREDIENTS.map((item, idx) => (
                         <option key={idx} value={item.name}>
                           {item.name} ({item.category})
                         </option>
                       ))}
+                      <option value="Custom">➕ Other (Type Custom Ingredient...)</option>
                     </select>
 
-                    <input 
-                      type="text" 
-                      list="common-ingredients-list"
-                      className="form-control" 
-                      required 
-                      placeholder="Type or select ingredient (e.g. Garlic)"
-                      value={formName}
-                      onChange={(e) => handleNameInput(e.target.value)}
-                    />
-                    <datalist id="common-ingredients-list">
-                      {COMMON_INGREDIENTS.map((item, idx) => (
-                        <option key={idx} value={item.name}>{item.category}</option>
-                      ))}
-                    </datalist>
+                    {/* Show text input only if Custom is selected or editing a custom item */}
+                    {(!COMMON_INGREDIENTS.some(i => i.name === formName) && (formName !== '' || formName === '')) && (
+                      <input 
+                        type="text" 
+                        className="form-control mt-2" 
+                        placeholder="Enter custom ingredient name..."
+                        value={formName}
+                        onChange={(e) => setFormName(e.target.value)}
+                      />
+                    )}
                   </div>
 
                   <div className="row g-3 mb-3">
