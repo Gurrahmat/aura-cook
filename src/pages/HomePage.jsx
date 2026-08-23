@@ -1,0 +1,122 @@
+import React from 'react';
+import { useKitchen } from '../context/KitchenContext';
+import { RecipeCard } from '../components/RecipeCard';
+import { Sparkles, Compass, Play, Warehouse, Music, Mic, ShoppingBag, ArrowRight } from 'lucide-react';
+
+export const HomePage = () => {
+  const { recipes, setCurrentPage, toggleAudio } = useKitchen();
+
+  return (
+    <div className="container">
+      {/* Hero Section */}
+      <section className="hero-auracook">
+        <div className="row align-items-center">
+          <div className="col-lg-8">
+            <div className="hero-tag">
+              <Sparkles size={16} /> Sensory Cooking Experience
+            </div>
+            <h1 className="display-4 mb-3">Cook in Harmony with Your Senses</h1>
+            <p className="lead mb-4 text-white-50">
+              Welcome to AuraCook – your ambient kitchen companion. Experience step-by-step hands-free voice cooking, multiple simultaneous timers, soothing kitchen soundscapes, and intelligent pantry recommendations.
+            </p>
+            <div className="d-flex flex-wrap gap-3">
+              <button className="btn btn-auracook-primary btn-lg" onClick={() => setCurrentPage('recipes')}>
+                <Compass size={18} className="me-2" /> Discover Recipes
+              </button>
+              <button className="btn btn-auracook-secondary btn-lg bg-white text-dark" onClick={() => setCurrentPage('cooking')}>
+                <Play size={18} className="me-2" /> Start Cooking Mode
+              </button>
+              <button className="btn btn-outline-light btn-lg" onClick={() => setCurrentPage('pantry')}>
+                <Warehouse size={18} className="me-2" /> Digital Pantry
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Feature Cards */}
+      <section className="row g-4 mb-5">
+        <div className="col-md-4">
+          <div className="glass-card p-4 h-100 d-flex flex-column">
+            <div className="d-flex align-items-center gap-3 mb-3">
+              <div className="vibe-icon-wrapper">
+                <Music size={20} color="white" />
+              </div>
+              <div>
+                <h5 className="mb-0 font-serif">Ambient Soundscapes</h5>
+                <small className="text-muted">Set the kitchen atmosphere</small>
+              </div>
+            </div>
+            <p className="text-muted small flex-grow-1">
+              Immerse yourself in cozy background audio—from gentle rainy windows to bustling café tones and crackling fireplaces.
+            </p>
+            <button className="btn btn-sm btn-auracook-secondary mt-auto" onClick={toggleAudio}>
+              Toggle Soundscape
+            </button>
+          </div>
+        </div>
+
+        <div className="col-md-4">
+          <div className="glass-card p-4 h-100 d-flex flex-column">
+            <div className="d-flex align-items-center gap-3 mb-3">
+              <div className="vibe-icon-wrapper" style={{ background: 'linear-gradient(135deg, var(--c-sage), var(--c-sage-dark))' }}>
+                <Mic size={20} color="white" />
+              </div>
+              <div>
+                <h5 className="mb-0 font-serif">Hands-Free Voice Controls</h5>
+                <small className="text-muted">Cook without messy screens</small>
+              </div>
+            </div>
+            <p className="text-muted small flex-grow-1">
+              Simply speak commands like <em>"Next step"</em>, <em>"Read step"</em>, or <em>"Start 5 minute timer"</em> to keep your workflow smooth.
+            </p>
+            <button className="btn btn-sm btn-auracook-secondary mt-auto" onClick={() => setCurrentPage('cooking')}>
+              Try Voice Assistant
+            </button>
+          </div>
+        </div>
+
+        <div className="col-md-4">
+          <div className="glass-card p-4 h-100 d-flex flex-column">
+            <div className="d-flex align-items-center gap-3 mb-3">
+              <div className="vibe-icon-wrapper" style={{ background: 'linear-gradient(135deg, var(--c-amber), #E5A84B)' }}>
+                <ShoppingBag size={20} color="white" />
+              </div>
+              <div>
+                <h5 className="mb-0 font-serif">Smart Pantry Match</h5>
+                <small className="text-muted">Zero food waste recommendations</small>
+              </div>
+            </div>
+            <p className="text-muted small flex-grow-1">
+              Track ingredients in stock and instantly filter recipes you can prepare right now with available pantry items.
+            </p>
+            <button className="btn btn-sm btn-auracook-secondary mt-auto" onClick={() => setCurrentPage('pantry')}>
+              View My Stock
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* Smart Pantry Recommendations */}
+      <section className="mb-5">
+        <div className="d-flex align-items-center justify-content-between mb-4">
+          <div>
+            <span className="text-terracotta fw-bold text-uppercase small">Pantry Powered</span>
+            <h2 className="h3 font-serif mb-0">What Can You Cook Today?</h2>
+          </div>
+          <button className="btn btn-link text-terracotta fw-bold text-decoration-none" onClick={() => setCurrentPage('recipes')}>
+            View All Library <ArrowRight size={16} className="ms-1" />
+          </button>
+        </div>
+
+        <div className="row g-4">
+          {recipes.slice(0, 3).map(recipe => (
+            <div key={recipe.id} className="col-md-4">
+              <RecipeCard recipe={recipe} />
+            </div>
+          ))}
+        </div>
+      </section>
+    </div>
+  );
+};
