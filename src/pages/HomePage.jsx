@@ -8,7 +8,6 @@ export const HomePage = () => {
 
   return (
     <div className="container">
-      {/* Hero Section */}
       <section className="hero-auracook">
         <div className="row align-items-center">
           <div className="col-lg-8">
@@ -34,7 +33,6 @@ export const HomePage = () => {
         </div>
       </section>
 
-      {/* Feature Cards */}
       <section className="row g-4 mb-5">
         <div className="col-md-4">
           <div className="glass-card p-4 h-100 d-flex flex-column">
@@ -97,7 +95,6 @@ export const HomePage = () => {
         </div>
       </section>
 
-      {/* Smart Pantry Recommendations */}
       <section className="mb-5">
         <div className="d-flex align-items-center justify-content-between mb-4">
           <div>

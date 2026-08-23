@@ -7,7 +7,6 @@ const KitchenContext = createContext();
 export const KitchenProvider = ({ children }) => {
   const [recipes] = useState(DEFAULT_RECIPES);
   
-  // LocalStorage Pantry State
   const [pantry, setPantry] = useState(() => {
     const saved = localStorage.getItem('auracook_pantry_react');
     if (saved) {
@@ -20,15 +19,12 @@ export const KitchenProvider = ({ children }) => {
     localStorage.setItem('auracook_pantry_react', JSON.stringify(pantry));
   }, [pantry]);
 
-  // Timers State
   const [timers, setTimers] = useState([]);
   const [isTimerDrawerOpen, setIsTimerDrawerOpen] = useState(false);
 
-  // Page & Active Cooking State
-  const [currentPage, setCurrentPage] = useState('home'); // 'home', 'recipes', 'cooking', 'pantry'
+  const [currentPage, setCurrentPage] = useState('home');
   const [activeRecipeId, setActiveRecipeId] = useState(DEFAULT_RECIPES[0].id);
 
-  // Toast Notifications
   const [toasts, setToasts] = useState([]);
 
   const addToast = (message, type = 'info') => {
@@ -58,7 +54,6 @@ export const KitchenProvider = ({ children }) => {
     } catch (e) {}
   };
 
-  // Timer Tick Engine
   useEffect(() => {
     const interval = setInterval(() => {
       setTimers(prevTimers => {
@@ -80,7 +75,6 @@ export const KitchenProvider = ({ children }) => {
     return () => clearInterval(interval);
   }, []);
 
-  // Timer Handlers
   const createTimer = (name, durationSeconds) => {
     const newTimer = {
       id: 'timer_' + Date.now(),
@@ -116,7 +110,6 @@ export const KitchenProvider = ({ children }) => {
     setTimers(prev => prev.filter(t => t.id !== id));
   };
 
-  // Pantry Handlers
   const addPantryItem = (item) => {
     const newItem = { ...item, id: 'p_' + Date.now() };
     setPantry(prev => [...prev, newItem]);
@@ -139,7 +132,6 @@ export const KitchenProvider = ({ children }) => {
     addToast(`Restored common kitchen staples to pantry`, 'success');
   };
 
-  // Smart Recipe Recommendation Match Calculation
   const computeRecipeMatch = (recipe) => {
     const inStockNames = pantry
       .filter(i => i.status !== 'Out of Stock')

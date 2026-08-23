@@ -28,7 +28,6 @@ export const CookingPage = () => {
 
   return (
     <div className="cooking-container container px-3 py-4">
-      {/* Hero Card */}
       <div className="cooking-hero-card d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
         <div>
           <span className="badge bg-terracotta text-white mb-2"><Flame size={12} className="me-1" /> Cooking In Progress</span>
@@ -52,12 +51,10 @@ export const CookingPage = () => {
         </div>
       </div>
 
-      {/* Progress Bar */}
       <div className="progress mb-4" style={{ height: '8px', borderRadius: '4px' }}>
         <div className="progress-bar bg-terracotta" style={{ width: `${progressPct}%` }}></div>
       </div>
 
-      {/* Step Card */}
       <div className="cooking-step-card">
         <div>
           <div className="d-flex align-items-center justify-content-between mb-3">
@@ -83,7 +80,6 @@ export const CookingPage = () => {
           </div>
         </div>
 
-        {/* Tools & Ingredients */}
         <div>
           <div className="row g-3 border-top pt-3 mb-3">
             <div className="col-md-6">
@@ -140,7 +136,6 @@ export const CookingPage = () => {
         </div>
       </div>
 
-      {/* Completion Modal */}
       {showCompletionModal && (
         <div className="modal fade show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.6)' }}>
           <div className="modal-dialog modal-dialog-centered text-center">

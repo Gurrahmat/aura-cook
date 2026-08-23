@@ -56,7 +56,6 @@ export const RecipesPage = () => {
         </div>
       </div>
 
-      {/* Toolbar */}
       <div className="glass-panel p-3 mb-4">
         <div className="row g-3 align-items-center">
           <div className="col-lg-4">
@@ -99,7 +98,6 @@ export const RecipesPage = () => {
         </div>
       </div>
 
-      {/* Grid */}
       {filteredRecipes.length === 0 ? (
         <div className="text-center py-5">
           <UtensilsCrossed size={48} className="text-muted mb-3" />
@@ -116,7 +114,6 @@ export const RecipesPage = () => {
         </div>
       )}
 
-      {/* Detail Modal */}
       {selectedRecipeModal && (
         <RecipeDetailModal 
           recipe={selectedRecipeModal} 

@@ -81,7 +81,7 @@ export const MultiTimerDrawer = () => {
           )}
         </div>
 
-        {/* Quick Preset Buttons */}
+        {}
         <div className="d-flex gap-2 mb-4 overflow-x-auto pb-2">
           <button className="btn btn-sm btn-outline-secondary text-nowrap" onClick={() => createTimer('Pasta Boiling', 8 * 60)}>8m Pasta</button>
           <button className="btn btn-sm btn-outline-secondary text-nowrap" onClick={() => createTimer('Sauce Simmer', 12 * 60)}>12m Sauce</button>

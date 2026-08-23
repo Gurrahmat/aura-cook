@@ -121,7 +121,6 @@ export const PantryPage = () => {
 
   return (
     <div className="container py-4">
-      {/* Header */}
       <div className="d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-4 gap-3">
         <div>
           <h1 className="h2 font-serif mb-1">Digital Pantry Inventory</h1>
@@ -137,7 +136,6 @@ export const PantryPage = () => {
         </div>
       </div>
 
-      {/* Toolbar */}
       <div className="glass-panel p-3 mb-4">
         <div className="row g-3 align-items-center">
           <div className="col-md-6 col-lg-5">
@@ -171,7 +169,6 @@ export const PantryPage = () => {
         </div>
       </div>
 
-      {/* Content Grid */}
       <div className="row g-4 mb-5">
         <div className="col-lg-8">
           <div className="glass-panel p-3">
@@ -223,7 +220,6 @@ export const PantryPage = () => {
           </div>
         </div>
 
-        {/* Sidebar */}
         <div className="col-lg-4">
           <div className="glass-card p-4">
             <h5 className="font-serif mb-3 border-bottom pb-2 d-flex align-items-center">
@@ -254,7 +250,6 @@ export const PantryPage = () => {
         </div>
       </div>
 
-      {/* Add / Edit Modal */}
       {showModal && (
         <div className="modal fade show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.6)' }}>
           <div className="modal-dialog modal-dialog-centered">

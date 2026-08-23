@@ -1,12 +1,9 @@
-/* ==========================================================================
-   AuraCook – Modern Ambient Kitchen Companion Stylesheet
-   Theme: Warm Luxury Kitchen (Terracotta, Deep Sage, Soft Cream, Golden Amber, Dark Cocoa)
-   ========================================================================== */
+
 
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 
 :root {
-  /* Color Palette */
+  
   --c-terracotta: #E07A5F;
   --c-terracotta-dark: #C85F45;
   --c-terracotta-light: #F4A261;
@@ -22,13 +19,11 @@
   --c-success: #2A9D8F;
   --c-warning: #E76F51;
   --c-danger: #D62828;
-  
-  /* Text colors */
+
   --text-main: #2D2926;
   --text-muted: #6C757D;
   --text-light: #F8F5EE;
-  
-  /* Glassmorphism & Elevation */
+
   --glass-bg: rgba(255, 255, 255, 0.75);
   --glass-dark-bg: rgba(30, 27, 24, 0.85);
   --glass-border: rgba(255, 255, 255, 0.4);
@@ -39,18 +34,15 @@
   --shadow-md: 0 8px 24px rgba(30, 27, 24, 0.08);
   --shadow-lg: 0 16px 40px rgba(30, 27, 24, 0.12);
   --shadow-glow: 0 0 25px rgba(224, 122, 95, 0.25);
-  
-  /* Fonts */
+
   --font-serif: 'Playfair Display', Georgia, serif;
   --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
 
-  /* Transitions */
   --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-bounce: 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
-/* --- Dark Mode Overrides --- */
 [data-theme="dark"] {
   --c-cream: #181614;
   --c-cream-card: #23201D;
@@ -63,7 +55,6 @@
   --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.6);
 }
 
-/* Base Styles */
 * {
   box-sizing: border-box;
 }
@@ -93,7 +84,6 @@ a {
   color: inherit;
 }
 
-/* Glassmorphism utility */
 .glass-panel {
   background: var(--glass-bg);
   backdrop-filter: var(--glass-blur);
@@ -116,7 +106,6 @@ a {
   border-color: var(--c-terracotta-light);
 }
 
-/* --- Header & Navigation --- */
 .navbar-auracook {
   background: var(--glass-bg);
   backdrop-filter: var(--glass-blur);
@@ -175,7 +164,6 @@ a {
   font-weight: 700;
 }
 
-/* --- Hero Banner --- */
 .hero-auracook {
   background: linear-gradient(135deg, rgba(61, 64, 91, 0.92) 0%, rgba(30, 27, 24, 0.95) 100%),
               url('https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1600&q=80');
@@ -218,7 +206,6 @@ a {
   margin-bottom: 1rem;
 }
 
-/* --- Recipe Cards --- */
 .recipe-card-img-wrapper {
   position: relative;
   height: 210px;
@@ -307,7 +294,6 @@ a {
   margin-bottom: 6px;
 }
 
-/* --- Ambient Sound Player Bar ("The Vibe Dock") --- */
 .vibe-dock {
   position: fixed;
   bottom: 16px;
@@ -412,7 +398,6 @@ a {
   cursor: pointer;
 }
 
-/* Sound Wave Equalizer Animation */
 .equalizer {
   display: flex;
   align-items: flex-end;
@@ -438,7 +423,6 @@ a {
   50% { height: 18px; }
 }
 
-/* --- Multi-Timer Drawer & Overlay --- */
 .timer-drawer-overlay {
   position: fixed;
   top: 0;
@@ -513,7 +497,6 @@ a {
   transition: width 1s linear;
 }
 
-/* --- Immersive Cooking Mode View (`cooking.html`) --- */
 .cooking-container {
   max-width: 1000px;
   margin: 2rem auto;
@@ -580,7 +563,6 @@ a {
   border-radius: 20px;
 }
 
-/* Voice Assistant Pill Widget */
 .voice-assistant-bar {
   background: rgba(61, 64, 91, 0.08);
   border: 1.5px solid rgba(61, 64, 91, 0.2);
@@ -613,7 +595,6 @@ a {
   box-shadow: 0 0 20px rgba(224, 122, 95, 0.6);
 }
 
-/* --- Digital Pantry Cards & Badges --- */
 .pantry-status-badge {
   padding: 4px 10px;
   border-radius: 20px;
@@ -640,7 +621,6 @@ a {
   border: 1px solid #D62828;
 }
 
-/* Custom Buttons */
 .btn-auracook-primary {
   background: var(--c-terracotta);
   color: white;
@@ -674,7 +654,6 @@ a {
   color: white;
 }
 
-/* Toast Notifications Container */
 .toast-container-auracook {
   position: fixed;
   top: 24px;
@@ -699,7 +678,6 @@ a {
   animation: slide-toast 0.3s ease-out forwards;
 }
 
-/* Animations */
 @keyframes pulse-warm {
   0%, 100% { transform: scale(1); opacity: 1; }
   50% { transform: scale(1.08); opacity: 0.85; }
@@ -725,7 +703,6 @@ a {
   to { transform: translateX(0); opacity: 1; }
 }
 
-/* Mobile Responsiveness */
 @media (max-width: 768px) {
   .vibe-dock {
     flex-direction: column;
