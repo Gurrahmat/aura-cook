@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useKitchen } from '../context/KitchenContext';
-import { Flame, Timer, Wrench, Leaf, ArrowLeft, ArrowRight, CheckCircle } from 'lucide-react';
+import { Flame, Timer, Wrench, Leaf, ArrowLeft, ArrowRight, CheckCircle, Check, X } from 'lucide-react';
 
 export const CookingPage = () => {
-  const { recipes, activeRecipeId, setCurrentPage, createTimer } = useKitchen();
+  const { recipes, activeRecipeId, setCurrentPage, createTimer, pantry } = useKitchen();
   
   const currentRecipe = recipes.find(r => r.id === activeRecipeId) || recipes[0];
   const [currentStepIdx, setCurrentStepIdx] = useState(0);
@@ -12,6 +12,10 @@ export const CookingPage = () => {
   const step = currentRecipe.instructions[currentStepIdx];
   const totalSteps = currentRecipe.instructions.length;
   const progressPct = Math.round(((currentStepIdx + 1) / totalSteps) * 100);
+
+  const inStockNames = pantry
+    .filter(i => i.status !== 'Out of Stock')
+    .map(i => i.name.toLowerCase());
 
   const handleStepNavigation = (dir) => {
     if (dir === 1 && currentStepIdx === totalSteps - 1) {
@@ -103,9 +107,18 @@ export const CookingPage = () => {
               </small>
               <div className="step-tools-list">
                 {step.ingredients && step.ingredients.length > 0 ? (
-                  step.ingredients.map((ing, idx) => (
-                    <span key={idx} className="step-tool-tag bg-terracotta text-white border-0">{ing}</span>
-                  ))
+                  step.ingredients.map((ing, idx) => {
+                    const hasItem = inStockNames.some(p => p.includes(ing.toLowerCase()) || ing.toLowerCase().includes(p));
+                    return (
+                      <span 
+                        key={idx} 
+                        className={`step-tool-tag ${hasItem ? 'bg-dark text-white fw-bold border-0 shadow-sm' : 'bg-light text-muted border border-secondary-subtle'}`}
+                      >
+                        {hasItem ? <Check size={12} className="me-1 text-success" /> : <X size={12} className="me-1 text-danger opacity-75" />}
+                        {ing}
+                      </span>
+                    );
+                  })
                 ) : (
                   <span className="text-muted small">None specified</span>
                 )}
