@@ -13,7 +13,15 @@ export const RecipeCard = ({ recipe, onOpenModal }) => {
   return (
     <div className="glass-card h-100 d-flex flex-column">
       <div className="recipe-card-img-wrapper">
-        <img src={recipe.image} className="recipe-card-img" alt={recipe.title} />
+        <img 
+          src={recipe.image} 
+          className="recipe-card-img" 
+          alt={recipe.title} 
+          onError={(e) => {
+            e.target.onerror = null;
+            e.target.src = "https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=800&q=80";
+          }}
+        />
         <div className="recipe-badge-time">
           <Clock size={14} className="me-1" /> {recipe.cookTime + recipe.prepTime} mins
         </div>

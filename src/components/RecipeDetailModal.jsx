@@ -20,7 +20,15 @@ export const RecipeDetailModal = ({ recipe, onClose }) => {
           <div className="modal-body p-4">
             <div className="row g-4">
               <div className="col-md-5">
-                <img src={recipe.image} className="img-fluid rounded-4 shadow-sm mb-3" alt={recipe.title} />
+                <img 
+                  src={recipe.image} 
+                  className="img-fluid rounded-4 shadow-sm mb-3" 
+                  alt={recipe.title} 
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = "https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=800&q=80";
+                  }}
+                />
                 <div className="d-flex flex-wrap gap-2 mb-3">
                   <span className="badge bg-sage">{recipe.category}</span>
                   <span className="badge bg-terracotta">{recipe.difficulty}</span>

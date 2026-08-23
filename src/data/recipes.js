@@ -7,7 +7,7 @@ export const DEFAULT_RECIPES = [
     prepTime: 15,
     cookTime: 25,
     servings: 4,
-    image: "assets/images/tuscan_chicken_1787063126108.jpg",
+    image: "https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=800&q=80",
     tags: ["Chicken", "Creamy", "Italian", "Gluten-Free"],
     description: "Tender chicken breasts pan-seared and smothered in a rich garlic cream sauce with sun-dried tomatoes and fresh spinach.",
     ingredients: [
@@ -81,7 +81,7 @@ export const DEFAULT_RECIPES = [
     prepTime: 10,
     cookTime: 15,
     servings: 3,
-    image: "assets/images/tomato_pasta_1787063685678.jpg",
+    image: "https://images.unsplash.com/photo-1551183053-bf91a1d81141?auto=format&fit=crop&w=800&q=80",
     tags: ["Vegetarian", "Pasta", "Italian", "Comfort Food"],
     description: "Al dente fettuccine tossed in a rich, velvety tomato garlic cream sauce filled with sautéed mushrooms and fresh basil.",
     ingredients: [
