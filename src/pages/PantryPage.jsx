@@ -60,21 +60,12 @@ export const PantryPage = () => {
   const [formExpiry, setFormExpiry] = useState('');
   const [formStatus, setFormStatus] = useState('In Stock');
 
-  const handleNameInput = (val) => {
-    setFormName(val);
-    const match = COMMON_INGREDIENTS.find(i => i.name.toLowerCase() === val.trim().toLowerCase());
-    if (match) {
-      if (match.category) setFormCat(match.category);
-      if (match.unit && !formUnit) setFormUnit(match.unit);
-    }
-  };
-
   const openAddModal = () => {
     setEditItem(null);
-    setFormName('');
+    setFormName(COMMON_INGREDIENTS[0].name);
     setFormQty(1);
-    setFormUnit('');
-    setFormCat('Produce');
+    setFormUnit(COMMON_INGREDIENTS[0].unit);
+    setFormCat(COMMON_INGREDIENTS[0].category);
     setFormExpiry('');
     setFormStatus('In Stock');
     setShowModal(true);
@@ -279,18 +270,14 @@ export const PantryPage = () => {
                     <select 
                       className="form-select"
                       required
-                      value={COMMON_INGREDIENTS.some(i => i.name === formName) ? formName : (formName ? 'Custom' : '')}
+                      value={formName}
                       onChange={(e) => {
                         const val = e.target.value;
-                        if (val === 'Custom') {
-                          setFormName('');
-                        } else {
-                          setFormName(val);
-                          const match = COMMON_INGREDIENTS.find(i => i.name === val);
-                          if (match) {
-                            if (match.category) setFormCat(match.category);
-                            if (match.unit) setFormUnit(match.unit);
-                          }
+                        setFormName(val);
+                        const match = COMMON_INGREDIENTS.find(i => i.name === val);
+                        if (match) {
+                          if (match.category) setFormCat(match.category);
+                          if (match.unit) setFormUnit(match.unit);
                         }
                       }}
                     >
@@ -300,19 +287,7 @@ export const PantryPage = () => {
                           {item.name} ({item.category})
                         </option>
                       ))}
-                      <option value="Custom">➕ Other (Type Custom Ingredient...)</option>
                     </select>
-
-                    {/* Show text input only if Custom is selected or editing a custom item */}
-                    {(!COMMON_INGREDIENTS.some(i => i.name === formName) && (formName !== '' || formName === '')) && (
-                      <input 
-                        type="text" 
-                        className="form-control mt-2" 
-                        placeholder="Enter custom ingredient name..."
-                        value={formName}
-                        onChange={(e) => setFormName(e.target.value)}
-                      />
-                    )}
                   </div>
 
                   <div className="row g-3 mb-3">
