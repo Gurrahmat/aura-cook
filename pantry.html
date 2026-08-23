@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Digital Pantry – AuraCook</title>
+  
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-auracook">
+    <div class="container-fluid">
+      <a class="navbar-brand-auracook" href="index.html">
+        <i class="fas fa-utensils"></i> AuraCook
+      </a>
+      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+        <i class="fas fa-bars text-dark fs-4"></i>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarContent">
+        <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-1">
+          <li class="nav-item">
+            <a class="nav-link-auracook" href="index.html">
+              <i class="fas fa-home"></i> Home
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link-auracook" href="recipes.html">
+              <i class="fas fa-book-open"></i> Recipes
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link-auracook" href="cooking.html">
+              <i class="fas fa-fire-burner"></i> Cooking Mode
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link-auracook active" href="pantry.html">
+              <i class="fas fa-box-open"></i> Pantry
+            </a>
+          </li>
+        </ul>
+
+        <div class="d-flex align-items-center gap-3">
+          <button class="btn btn-auracook-secondary btn-toggle-timer position-relative">
+            <i class="fas fa-stopwatch me-1"></i> Timers
+            <span class="badge-timer-count ms-1">0</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Pantry Layout -->
+  <main class="container py-4">
+    
+    <!-- Page Header & Action Controls -->
+    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-4 gap-3">
+      <div>
+        <h1 class="h2 font-serif mb-1">Digital Pantry Inventory</h1>
+        <p class="text-muted mb-0">Track kitchen stock, monitor expiry dates, and unlock recipe recommendations.</p>
+      </div>
+      <div class="d-flex flex-wrap gap-2">
+        <button class="btn btn-outline-secondary" id="btn-load-staples">
+          <i class="fas fa-magic me-1"></i> Populate Common Staples
+        </button>
+        <button class="btn btn-auracook-primary" data-bs-toggle="modal" data-bs-target="#pantryItemModal" onclick="resetPantryModal()">
+          <i class="fas fa-plus me-1"></i> Add Ingredient
+        </button>
+      </div>
+    </div>
+
+    <!-- Search & Category Toolbar -->
+    <div class="glass-panel p-3 mb-4">
+      <div class="row g-3 align-items-center">
+        <div class="col-md-6 col-lg-5">
+          <div class="input-group">
+            <span class="input-group-text bg-white border-end-0"><i class="fas fa-search text-muted"></i></span>
+            <input type="text" class="form-control border-start-0" id="pantry-search" placeholder="Search pantry items...">
+          </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+          <select class="form-select" id="pantry-category-filter">
+            <option value="all">All Categories</option>
+            <option value="Produce">Produce</option>
+            <option value="Dairy & Eggs">Dairy & Eggs</option>
+            <option value="Pantry Staples">Pantry Staples</option>
+            <option value="Spices & Herbs">Spices & Herbs</option>
+            <option value="Meat & Seafood">Meat & Seafood</option>
+            <option value="Grains & Bakery">Grains & Bakery</option>
+          </select>
+        </div>
+
+        <div class="col-md-12 col-lg-3 text-end">
+          <span class="text-muted small me-2">Total Items: <strong id="pantry-count-label">0</strong></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pantry Items Table / Cards -->
+    <div class="row g-4 mb-5">
+      <div class="col-lg-8">
+        <div class="glass-panel p-3">
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead>
+                <tr>
+                  <th>Ingredient</th>
+                  <th>Quantity</th>
+                  <th>Category</th>
+                  <th>Expiry</th>
+                  <th>Status</th>
+                  <th class="text-end">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="pantry-table-body">
+                <!-- Rendered dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Recipe Match Sidebar -->
+      <div class="col-lg-4">
+        <div class="glass-card p-4">
+          <h5 class="font-serif mb-3 border-bottom pb-2">
+            <i class="fas fa-hat-chef text-terracotta me-2"></i>Pantry Recommendations
+          </h5>
+          <p class="text-muted small">Based on your available items, here are recipes you can cook:</p>
+          <div id="pantry-recipe-matches">
+            <!-- Matches rendered dynamically -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Add/Edit Pantry Item Modal -->
+  <div class="modal fade" id="pantryItemModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content glass-panel border-0">
+        <div class="modal-header border-0 bg-sage text-white p-4">
+          <h5 class="modal-title font-serif" id="pantryModalTitle">Add New Ingredient</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <form id="pantry-form">
+          <div class="modal-body p-4">
+            <input type="hidden" id="pantry-item-id">
+            
+            <div class="mb-3">
+              <label class="form-label font-sans fw-bold small">Ingredient Name</label>
+              <input type="text" class="form-control" id="pantry-name" required placeholder="e.g. Fresh Garlic">
+            </div>
+
+            <div class="row g-3 mb-3">
+              <div class="col-6">
+                <label class="form-label font-sans fw-bold small">Quantity</label>
+                <input type="number" step="any" class="form-control" id="pantry-qty" required value="1">
+              </div>
+              <div class="col-6">
+                <label class="form-label font-sans fw-bold small">Unit</label>
+                <input type="text" class="form-control" id="pantry-unit" placeholder="e.g. cloves, g, ml">
+              </div>
+            </div>
+
+            <div class="row g-3 mb-3">
+              <div class="col-6">
+                <label class="form-label font-sans fw-bold small">Category</label>
+                <select class="form-select" id="pantry-category">
+                  <option value="Produce">Produce</option>
+                  <option value="Dairy & Eggs">Dairy & Eggs</option>
+                  <option value="Pantry Staples">Pantry Staples</option>
+                  <option value="Spices & Herbs">Spices & Herbs</option>
+                  <option value="Meat & Seafood">Meat & Seafood</option>
+                  <option value="Grains & Bakery">Grains & Bakery</option>
+                </select>
+              </div>
+              <div class="col-6">
+                <label class="form-label font-sans fw-bold small">Expiry Date</label>
+                <input type="date" class="form-control" id="pantry-expiry">
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label font-sans fw-bold small">Stock Status</label>
+              <select class="form-select" id="pantry-status">
+                <option value="In Stock">In Stock</option>
+                <option value="Low Stock">Low Stock</option>
+                <option value="Out of Stock">Out of Stock</option>
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer border-0 p-4 pt-0">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-auracook-primary">Save Ingredient</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Multi-Timer Drawer Component -->
+  <div class="timer-drawer-overlay" id="timer-drawer-overlay"></div>
+  <div class="timer-drawer" id="timer-drawer">
+    <div class="d-flex align-items-center justify-content-between mb-4 pb-3 border-bottom">
+      <h4 class="font-serif mb-0"><i class="fas fa-stopwatch text-terracotta me-2"></i>Kitchen Timers</h4>
+      <button class="btn-close" id="close-timer-drawer"></button>
+    </div>
+    
+    <div class="mb-3">
+      <button class="btn btn-auracook-primary w-100" onclick="promptCreateTimer()">
+        <i class="fas fa-plus me-1"></i> Add Custom Timer
+      </button>
+    </div>
+
+    <div id="timer-list-container" class="flex-grow-1 overflow-y-auto">
+      <!-- Timers rendered here -->
+    </div>
+  </div>
+
+  <!-- Ambient Sound Player Dock Container -->
+  <div id="vibe-dock-container"></div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="script.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      renderPantryTable();
+      renderPantryRecipeRecommendations();
+
+      document.getElementById("pantry-search").addEventListener("input", renderPantryTable);
+      document.getElementById("pantry-category-filter").addEventListener("change", renderPantryTable);
+
+      document.getElementById("btn-load-staples").addEventListener("click", () => {
+        state.pantry = DEFAULT_PANTRY;
+        state.savePantry();
+        renderPantryTable();
+        renderPantryRecipeRecommendations();
+        showToast("Kitchen staples loaded into pantry!", "success");
+      });
+
+      document.getElementById("pantry-form").addEventListener("submit", (e) => {
+        e.preventDefault();
+        savePantryItemFromModal();
+      });
+    });
+
+    function renderPantryTable() {
+      const search = document.getElementById("pantry-search").value.toLowerCase().trim();
+      const cat = document.getElementById("pantry-category-filter").value;
+
+      const filtered = state.pantry.filter(item => {
+        const matchSearch = item.name.toLowerCase().includes(search) || item.category.toLowerCase().includes(search);
+        const matchCat = cat === 'all' || item.category === cat;
+        return matchSearch && matchCat;
+      });
+
+      document.getElementById("pantry-count-label").textContent = filtered.length;
+      const tbody = document.getElementById("pantry-table-body");
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-muted">No pantry items found.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(item => {
+        let statusBadge = "status-in-stock";
+        if (item.status === "Low Stock") statusBadge = "status-low-stock";
+        if (item.status === "Out of Stock") statusBadge = "status-out-stock";
+
+        return `
+          <tr>
+            <td class="fw-bold">${item.name}</td>
+            <td>${item.quantity} ${item.unit || ''}</td>
+            <td><span class="badge bg-secondary-subtle text-dark">${item.category}</span></td>
+            <td class="small text-muted">${item.expiryDate || 'N/A'}</td>
+            <td><span class="pantry-status-badge ${statusBadge}">${item.status}</span></td>
+            <td class="text-end">
+              <button class="btn btn-sm btn-outline-secondary me-1" onclick="editPantryItem('${item.id}')" title="Edit">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="btn btn-sm btn-outline-danger" onclick="deletePantryItem('${item.id}')" title="Delete">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function renderPantryRecipeRecommendations() {
+      const container = document.getElementById("pantry-recipe-matches");
+      if (!container) return;
+
+      const items = state.recipes.map(recipe => {
+        return { recipe, match: computeRecipePantryMatch(recipe) };
+      }).sort((a, b) => b.match.percent - a.match.percent);
+
+      container.innerHTML = items.map(({ recipe, match }) => `
+        <div class="d-flex align-items-center justify-content-between p-2 mb-2 rounded border bg-white">
+          <div>
+            <div class="fw-bold small">${recipe.title}</div>
+            <small class="text-muted">${match.matched}/${match.total} ingredients</small>
+          </div>
+          <div class="text-end">
+            <span class="badge ${match.percent >= 70 ? 'bg-success' : 'bg-warning text-dark'} mb-1 d-block">
+              ${match.percent}%
+            </span>
+            <a href="cooking.html?id=${recipe.id}" class="btn btn-xs btn-auracook-primary py-0 px-2 text-white text-decoration-none" style="font-size: 0.75rem;">
+              Cook
+            </a>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function resetPantryModal() {
+      document.getElementById("pantryModalTitle").textContent = "Add New Ingredient";
+      document.getElementById("pantry-item-id").value = "";
+      document.getElementById("pantry-name").value = "";
+      document.getElementById("pantry-qty").value = "1";
+      document.getElementById("pantry-unit").value = "";
+      document.getElementById("pantry-category").value = "Produce";
+      document.getElementById("pantry-expiry").value = "";
+      document.getElementById("pantry-status").value = "In Stock";
+    }
+
+    function editPantryItem(id) {
+      const item = state.pantry.find(i => i.id === id);
+      if (!item) return;
+
+      document.getElementById("pantryModalTitle").textContent = "Edit Ingredient";
+      document.getElementById("pantry-item-id").value = item.id;
+      document.getElementById("pantry-name").value = item.name;
+      document.getElementById("pantry-qty").value = item.quantity;
+      document.getElementById("pantry-unit").value = item.unit || "";
+      document.getElementById("pantry-category").value = item.category;
+      document.getElementById("pantry-expiry").value = item.expiryDate || "";
+      document.getElementById("pantry-status").value = item.status;
+
+      const modal = new bootstrap.Modal(document.getElementById("pantryItemModal"));
+      modal.show();
+    }
+
+    function savePantryItemFromModal() {
+      const id = document.getElementById("pantry-item-id").value;
+      const name = document.getElementById("pantry-name").value.trim();
+      const qty = parseFloat(document.getElementById("pantry-qty").value) || 1;
+      const unit = document.getElementById("pantry-unit").value.trim();
+      const cat = document.getElementById("pantry-category").value;
+      const expiry = document.getElementById("pantry-expiry").value;
+      const status = document.getElementById("pantry-status").value;
+
+      if (id) {
+        // Edit existing
+        const idx = state.pantry.findIndex(i => i.id === id);
+        if (idx !== -1) {
+          state.pantry[idx] = { id, name, quantity: qty, unit, category: cat, expiryDate: expiry, status };
+        }
+      } else {
+        // Add new
+        const newItem = {
+          id: "p_" + Date.now(),
+          name,
+          quantity: qty,
+          unit,
+          category: cat,
+          expiryDate: expiry,
+          status
+        };
+        state.pantry.push(newItem);
+      }
+
+      state.savePantry();
+      renderPantryTable();
+      renderPantryRecipeRecommendations();
+
+      const modalEl = document.getElementById("pantryItemModal");
+      const modal = bootstrap.Modal.getInstance(modalEl);
+      if (modal) modal.hide();
+
+      showToast(`Ingredient "${name}" saved to pantry!`, "success");
+    }
+
+    function deletePantryItem(id) {
+      const item = state.pantry.find(i => i.id === id);
+      if (!item) return;
+
+      if (confirm(`Are you sure you want to delete "${item.name}" from your pantry?`)) {
+        state.pantry = state.pantry.filter(i => i.id !== id);
+        state.savePantry();
+        renderPantryTable();
+        renderPantryRecipeRecommendations();
+        showToast(`Deleted "${item.name}" from pantry.`, "info");
+      }
+    }
+  </script>
+</body>
+</html>
