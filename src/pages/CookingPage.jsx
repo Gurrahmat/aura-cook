@@ -1,68 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useKitchen } from '../context/KitchenContext';
-import { Flame, Volume2, Timer, Wrench, Leaf, ArrowLeft, ArrowRight, CheckCircle, Mic, MicOff } from 'lucide-react';
+import { Flame, Timer, Wrench, Leaf, ArrowLeft, ArrowRight, CheckCircle } from 'lucide-react';
 
 export const CookingPage = () => {
-  const { recipes, activeRecipeId, setCurrentPage, createTimer, addToast } = useKitchen();
+  const { recipes, activeRecipeId, setCurrentPage, createTimer } = useKitchen();
   
   const currentRecipe = recipes.find(r => r.id === activeRecipeId) || recipes[0];
   const [currentStepIdx, setCurrentStepIdx] = useState(0);
-  const [isListeningVoice, setIsListeningVoice] = useState(false);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
 
   const step = currentRecipe.instructions[currentStepIdx];
   const totalSteps = currentRecipe.instructions.length;
   const progressPct = Math.round(((currentStepIdx + 1) / totalSteps) * 100);
-
-  // Text-To-Speech
-  const readStepAloud = () => {
-    if (!window.speechSynthesis) {
-      addToast("Speech synthesis is not supported in this browser.", "warning");
-      return;
-    }
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(`Step ${step.step}. ${step.text}`);
-    utterance.rate = 0.95;
-    window.speechSynthesis.speak(utterance);
-  };
-
-  // Web Speech API Voice Recognition
-  useEffect(() => {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) return;
-
-    const recognition = new SpeechRecognition();
-    recognition.continuous = true;
-    recognition.lang = 'en-US';
-
-    recognition.onresult = (event) => {
-      const lastIndex = event.results.length - 1;
-      const cmd = event.results[lastIndex][0].transcript.trim().toLowerCase();
-      addToast(`Voice heard: "${cmd}"`, 'info');
-
-      if (cmd.includes('next step') || cmd.includes('next')) {
-        handleStepNavigation(1);
-      } else if (cmd.includes('previous step') || cmd.includes('previous') || cmd.includes('back')) {
-        handleStepNavigation(-1);
-      } else if (cmd.includes('repeat') || cmd.includes('read step')) {
-        readStepAloud();
-      } else if (cmd.includes('start timer')) {
-        const match = cmd.match(/(\d+)/);
-        const mins = match ? parseInt(match[1], 10) : 5;
-        createTimer(`Voice Timer (${mins}m)`, mins * 60);
-      }
-    };
-
-    if (isListeningVoice) {
-      try { recognition.start(); } catch (e) {}
-    } else {
-      try { recognition.stop(); } catch (e) {}
-    }
-
-    return () => {
-      try { recognition.stop(); } catch (e) {}
-    };
-  }, [isListeningVoice, currentStepIdx]);
 
   const handleStepNavigation = (dir) => {
     if (dir === 1 && currentStepIdx === totalSteps - 1) {
@@ -118,9 +67,6 @@ export const CookingPage = () => {
             </div>
 
             <div className="d-flex align-items-center gap-2">
-              <button className="btn btn-outline-secondary btn-sm" onClick={readStepAloud}>
-                <Volume2 size={14} className="me-1" /> Read Step
-              </button>
               {step.timerMinutes > 0 && (
                 <button 
                   className="btn btn-auracook-primary btn-sm"
@@ -190,27 +136,6 @@ export const CookingPage = () => {
                 <>Next Step <ArrowRight size={18} className="ms-2" /></>
               )}
             </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Voice Assistant Widget */}
-      <div className="voice-assistant-bar">
-        <div className="d-flex align-items-center gap-3">
-          <button 
-            className={`voice-mic-btn ${isListeningVoice ? 'listening' : ''}`}
-            onClick={() => {
-              setIsListeningVoice(!isListeningVoice);
-              addToast(isListeningVoice ? "Voice assistant deactivated" : "Voice assistant active! Speak 'Next' or 'Read step'", "info");
-            }}
-          >
-            {isListeningVoice ? <Mic size={22} /> : <MicOff size={22} />}
-          </button>
-          <div>
-            <div className="fw-bold text-dark mb-0">Hands-Free Voice Cooking Assistant</div>
-            <small className="text-muted">
-              {isListeningVoice ? "Voice Listening Active... Speak 'Next', 'Back', or 'Read step'" : "Click mic to enable Voice Controls"}
-            </small>
           </div>
         </div>
       </div>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useKitchen } from '../context/KitchenContext';
 import { RecipeCard } from '../components/RecipeCard';
-import { Sparkles, Compass, Play, Warehouse, Timer, Mic, ShoppingBag, ArrowRight } from 'lucide-react';
+import { Sparkles, Compass, Play, Warehouse, Timer, Flame, ShoppingBag, ArrowRight } from 'lucide-react';
 
 export const HomePage = () => {
   const { recipes, setCurrentPage, setIsTimerDrawerOpen } = useKitchen();
@@ -17,7 +17,7 @@ export const HomePage = () => {
             </div>
             <h1 className="display-4 mb-3">Cook in Harmony with Your Senses</h1>
             <p className="lead mb-4 text-white-50">
-              Welcome to AuraCook – your ambient kitchen companion. Experience step-by-step hands-free voice cooking, multiple simultaneous timers, and intelligent pantry recommendations.
+              Welcome to AuraCook – your ambient kitchen companion. Experience step-by-step interactive recipe guidance, multiple simultaneous timers, and intelligent pantry recommendations.
             </p>
             <div className="d-flex flex-wrap gap-3">
               <button className="btn btn-auracook-primary btn-lg" onClick={() => setCurrentPage('recipes')}>
@@ -60,18 +60,18 @@ export const HomePage = () => {
           <div className="glass-card p-4 h-100 d-flex flex-column">
             <div className="d-flex align-items-center gap-3 mb-3">
               <div className="vibe-icon-wrapper" style={{ background: 'linear-gradient(135deg, var(--c-sage), var(--c-sage-dark))' }}>
-                <Mic size={20} color="white" />
+                <Flame size={20} color="white" />
               </div>
               <div>
-                <h5 className="mb-0 font-serif">Hands-Free Voice Controls</h5>
-                <small className="text-muted">Cook without messy screens</small>
+                <h5 className="mb-0 font-serif">Guided Cooking Mode</h5>
+                <small className="text-muted">Step-by-step clarity</small>
               </div>
             </div>
             <p className="text-muted small flex-grow-1">
-              Simply speak commands like <em>"Next step"</em>, <em>"Read step"</em>, or <em>"Start 5 minute timer"</em> to keep your workflow smooth.
+              Follow clean, structured step instructions with tools, ingredients, and built-in timer integration.
             </p>
             <button className="btn btn-sm btn-auracook-secondary mt-auto" onClick={() => setCurrentPage('cooking')}>
-              Try Voice Assistant
+              Start Cooking Mode
             </button>
           </div>
         </div>
