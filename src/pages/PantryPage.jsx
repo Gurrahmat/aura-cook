@@ -2,6 +2,40 @@ import React, { useState } from 'react';
 import { useKitchen } from '../context/KitchenContext';
 import { Search, Plus, Sparkles, Edit, Trash2, ChefHat, X } from 'lucide-react';
 
+const COMMON_INGREDIENTS = [
+  { name: "Garlic", category: "Produce", unit: "cloves" },
+  { name: "Olive Oil", category: "Pantry Staples", unit: "ml" },
+  { name: "Heavy Cream", category: "Dairy & Eggs", unit: "ml" },
+  { name: "Chicken Breast", category: "Meat & Seafood", unit: "pieces" },
+  { name: "Fresh Spinach", category: "Produce", unit: "bunch" },
+  { name: "Parmesan Cheese", category: "Dairy & Eggs", unit: "g" },
+  { name: "Mushrooms", category: "Produce", unit: "g" },
+  { name: "Fettuccine Pasta", category: "Grains & Bakery", unit: "g" },
+  { name: "Crushed Tomatoes", category: "Pantry Staples", unit: "cans" },
+  { name: "Salt", category: "Spices & Herbs", unit: "container" },
+  { name: "Black Pepper", category: "Spices & Herbs", unit: "container" },
+  { name: "Quinoa", category: "Grains & Bakery", unit: "cup" },
+  { name: "Chickpeas", category: "Pantry Staples", unit: "can" },
+  { name: "Cucumber", category: "Produce", unit: "medium" },
+  { name: "Cherry Tomatoes", category: "Produce", unit: "cup" },
+  { name: "Feta Cheese", category: "Dairy & Eggs", unit: "cup" },
+  { name: "Lemon", category: "Produce", unit: "whole" },
+  { name: "Salmon Fillet", category: "Meat & Seafood", unit: "pieces" },
+  { name: "Honey", category: "Pantry Staples", unit: "tbsp" },
+  { name: "Soy Sauce", category: "Pantry Staples", unit: "tbsp" },
+  { name: "Butter", category: "Dairy & Eggs", unit: "tbsp" },
+  { name: "Asparagus", category: "Produce", unit: "bunch" },
+  { name: "Sun-dried Tomatoes", category: "Pantry Staples", unit: "cup" },
+  { name: "Fresh Basil", category: "Produce", unit: "cup" },
+  { name: "Onions", category: "Produce", unit: "pieces" },
+  { name: "Potatoes", category: "Produce", unit: "g" },
+  { name: "Eggs", category: "Dairy & Eggs", unit: "dozen" },
+  { name: "Milk", category: "Dairy & Eggs", unit: "liters" },
+  { name: "Flour", category: "Grains & Bakery", unit: "kg" },
+  { name: "Sugar", category: "Pantry Staples", unit: "kg" },
+  { name: "Rice", category: "Grains & Bakery", unit: "kg" }
+];
+
 export const PantryPage = () => {
   const { 
     pantry, 
@@ -25,6 +59,15 @@ export const PantryPage = () => {
   const [formCat, setFormCat] = useState('Produce');
   const [formExpiry, setFormExpiry] = useState('');
   const [formStatus, setFormStatus] = useState('In Stock');
+
+  const handleNameInput = (val) => {
+    setFormName(val);
+    const match = COMMON_INGREDIENTS.find(i => i.name.toLowerCase() === val.trim().toLowerCase());
+    if (match) {
+      if (match.category) setFormCat(match.category);
+      if (match.unit && !formUnit) setFormUnit(match.unit);
+    }
+  };
 
   const openAddModal = () => {
     setEditItem(null);
@@ -232,15 +275,41 @@ export const PantryPage = () => {
               <form onSubmit={handleSubmit}>
                 <div className="modal-body p-4">
                   <div className="mb-3">
-                    <label className="form-label font-sans fw-bold small">Ingredient Name</label>
+                    <label className="form-label font-sans fw-bold small">Select or Type Ingredient Name</label>
+                    <select 
+                      className="form-select form-select-sm mb-2"
+                      value=""
+                      onChange={(e) => {
+                        const selected = COMMON_INGREDIENTS.find(i => i.name === e.target.value);
+                        if (selected) {
+                          setFormName(selected.name);
+                          setFormCat(selected.category);
+                          if (selected.unit) setFormUnit(selected.unit);
+                        }
+                      }}
+                    >
+                      <option value="" disabled>-- Quick Select from Database --</option>
+                      {COMMON_INGREDIENTS.map((item, idx) => (
+                        <option key={idx} value={item.name}>
+                          {item.name} ({item.category})
+                        </option>
+                      ))}
+                    </select>
+
                     <input 
                       type="text" 
+                      list="common-ingredients-list"
                       className="form-control" 
                       required 
-                      placeholder="e.g. Fresh Garlic"
+                      placeholder="Type or select ingredient (e.g. Garlic)"
                       value={formName}
-                      onChange={(e) => setFormName(e.target.value)}
+                      onChange={(e) => handleNameInput(e.target.value)}
                     />
+                    <datalist id="common-ingredients-list">
+                      {COMMON_INGREDIENTS.map((item, idx) => (
+                        <option key={idx} value={item.name}>{item.category}</option>
+                      ))}
+                    </datalist>
                   </div>
 
                   <div className="row g-3 mb-3">
