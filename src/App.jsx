@@ -1,7 +1,6 @@
 import React from 'react';
 import { KitchenProvider, useKitchen } from './context/KitchenContext';
 import { Navbar } from './components/Navbar';
-import { VibeDock } from './components/VibeDock';
 import { MultiTimerDrawer } from './components/MultiTimerDrawer';
 import { ToastContainer } from './components/ToastContainer';
 import { HomePage } from './pages/HomePage';
@@ -24,7 +23,6 @@ const AppContent = () => {
       </main>
 
       <MultiTimerDrawer />
-      <VibeDock />
       <ToastContainer />
     </div>
   );

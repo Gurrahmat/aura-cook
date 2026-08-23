@@ -1,10 +1,10 @@
 import React from 'react';
 import { useKitchen } from '../context/KitchenContext';
 import { RecipeCard } from '../components/RecipeCard';
-import { Sparkles, Compass, Play, Warehouse, Music, Mic, ShoppingBag, ArrowRight } from 'lucide-react';
+import { Sparkles, Compass, Play, Warehouse, Timer, Mic, ShoppingBag, ArrowRight } from 'lucide-react';
 
 export const HomePage = () => {
-  const { recipes, setCurrentPage, toggleAudio } = useKitchen();
+  const { recipes, setCurrentPage, setIsTimerDrawerOpen } = useKitchen();
 
   return (
     <div className="container">
@@ -13,11 +13,11 @@ export const HomePage = () => {
         <div className="row align-items-center">
           <div className="col-lg-8">
             <div className="hero-tag">
-              <Sparkles size={16} /> Sensory Cooking Experience
+              <Sparkles size={16} /> Smart Cooking Experience
             </div>
             <h1 className="display-4 mb-3">Cook in Harmony with Your Senses</h1>
             <p className="lead mb-4 text-white-50">
-              Welcome to AuraCook – your ambient kitchen companion. Experience step-by-step hands-free voice cooking, multiple simultaneous timers, soothing kitchen soundscapes, and intelligent pantry recommendations.
+              Welcome to AuraCook – your ambient kitchen companion. Experience step-by-step hands-free voice cooking, multiple simultaneous timers, and intelligent pantry recommendations.
             </p>
             <div className="d-flex flex-wrap gap-3">
               <button className="btn btn-auracook-primary btn-lg" onClick={() => setCurrentPage('recipes')}>
@@ -40,18 +40,18 @@ export const HomePage = () => {
           <div className="glass-card p-4 h-100 d-flex flex-column">
             <div className="d-flex align-items-center gap-3 mb-3">
               <div className="vibe-icon-wrapper">
-                <Music size={20} color="white" />
+                <Timer size={20} color="white" />
               </div>
               <div>
-                <h5 className="mb-0 font-serif">Ambient Soundscapes</h5>
-                <small className="text-muted">Set the kitchen atmosphere</small>
+                <h5 className="mb-0 font-serif">Multi-Timer Control</h5>
+                <small className="text-muted">Manage all cooking steps</small>
               </div>
             </div>
             <p className="text-muted small flex-grow-1">
-              Immerse yourself in cozy background audio—from gentle rainy windows to bustling café tones and crackling fireplaces.
+              Set and monitor multiple simultaneous countdown timers for boiling, searing, and oven baking.
             </p>
-            <button className="btn btn-sm btn-auracook-secondary mt-auto" onClick={toggleAudio}>
-              Toggle Soundscape
+            <button className="btn btn-sm btn-auracook-secondary mt-auto" onClick={() => setIsTimerDrawerOpen(true)}>
+              Open Timer Drawer
             </button>
           </div>
         </div>

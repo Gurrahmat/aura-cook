@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { DEFAULT_RECIPES } from '../data/recipes';
 import { DEFAULT_PANTRY } from '../data/defaultPantry';
-import { audioEngine } from '../services/audioSynth';
 
 const KitchenContext = createContext();
 
@@ -25,13 +24,6 @@ export const KitchenProvider = ({ children }) => {
   const [timers, setTimers] = useState([]);
   const [isTimerDrawerOpen, setIsTimerDrawerOpen] = useState(false);
 
-  // Audio Player State
-  const [audioState, setAudioState] = useState({
-    isPlaying: false,
-    track: 'rain',
-    volume: 0.6
-  });
-
   // Page & Active Cooking State
   const [currentPage, setCurrentPage] = useState('home'); // 'home', 'recipes', 'cooking', 'pantry'
   const [activeRecipeId, setActiveRecipeId] = useState(DEFAULT_RECIPES[0].id);
@@ -47,6 +39,25 @@ export const KitchenProvider = ({ children }) => {
     }, 4000);
   };
 
+  const playTimerBell = () => {
+    try {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) return;
+      const ctx = new AudioCtx();
+      const osc = ctx.createOscillator();
+      const g = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(880, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(440, ctx.currentTime + 0.5);
+      g.gain.setValueAtTime(0.2, ctx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
+      osc.connect(g);
+      g.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.55);
+    } catch (e) {}
+  };
+
   // Timer Tick Engine
   useEffect(() => {
     const interval = setInterval(() => {
@@ -55,7 +66,7 @@ export const KitchenProvider = ({ children }) => {
           if (timer.status === 'running') {
             const nextRemaining = timer.remainingSeconds - 1;
             if (nextRemaining <= 0) {
-              audioEngine.playTimerBell();
+              playTimerBell();
               addToast(`⏰ Timer Alert! "${timer.name}" completed!`, 'warning');
               return { ...timer, remainingSeconds: 0, status: 'finished' };
             }
@@ -103,29 +114,6 @@ export const KitchenProvider = ({ children }) => {
 
   const deleteTimer = (id) => {
     setTimers(prev => prev.filter(t => t.id !== id));
-  };
-
-  // Audio Handlers
-  const toggleAudio = () => {
-    if (audioState.isPlaying) {
-      audioEngine.stopCurrent();
-      setAudioState(prev => ({ ...prev, isPlaying: false }));
-    } else {
-      audioEngine.playSoundscape(audioState.track, audioState.volume);
-      setAudioState(prev => ({ ...prev, isPlaying: true }));
-    }
-  };
-
-  const setAudioTrack = (track) => {
-    setAudioState(prev => ({ ...prev, track }));
-    if (audioState.isPlaying) {
-      audioEngine.playSoundscape(track, audioState.volume);
-    }
-  };
-
-  const setAudioVolume = (volume) => {
-    setAudioState(prev => ({ ...prev, volume }));
-    audioEngine.setVolume(volume);
   };
 
   // Pantry Handlers
@@ -185,7 +173,6 @@ export const KitchenProvider = ({ children }) => {
       timers,
       isTimerDrawerOpen,
       setIsTimerDrawerOpen,
-      audioState,
       currentPage,
       setCurrentPage,
       activeRecipeId,
@@ -195,9 +182,6 @@ export const KitchenProvider = ({ children }) => {
       toggleTimerPause,
       resetTimer,
       deleteTimer,
-      toggleAudio,
-      setAudioTrack,
-      setAudioVolume,
       addPantryItem,
       updatePantryItem,
       deletePantryItem,

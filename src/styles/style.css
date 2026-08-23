@@ -78,7 +78,7 @@ body {
   display: flex;
   flex-direction: column;
   transition: background-color var(--transition-normal), color var(--transition-normal);
-  padding-bottom: 110px; /* Space for ambient player bar */
+  padding-bottom: 20px;
   overflow-x: hidden;
 }
 
