@@ -111,13 +111,23 @@ export const KitchenProvider = ({ children }) => {
   };
 
   const addPantryItem = (item) => {
-    const newItem = { ...item, id: 'p_' + Date.now() };
+    const qty = Math.max(0, parseFloat(item.quantity) || 0);
+    const status = qty === 0 ? "Out of Stock" : (item.status || "In Stock");
+    const newItem = { ...item, quantity: qty, status, id: 'p_' + Date.now() };
     setPantry(prev => [...prev, newItem]);
     addToast(`Added "${newItem.name}" to pantry`, 'success');
   };
 
   const updatePantryItem = (id, updatedFields) => {
-    setPantry(prev => prev.map(i => i.id === id ? { ...i, ...updatedFields } : i));
+    setPantry(prev => prev.map(i => {
+      if (i.id === id) {
+        const merged = { ...i, ...updatedFields };
+        const qty = Math.max(0, parseFloat(merged.quantity) || 0);
+        const status = qty === 0 ? "Out of Stock" : merged.status;
+        return { ...merged, quantity: qty, status };
+      }
+      return i;
+    }));
     addToast(`Updated pantry item`, 'info');
   };
 

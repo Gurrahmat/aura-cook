@@ -86,23 +86,26 @@ export const PantryPage = () => {
     e.preventDefault();
     if (!formName.trim()) return;
 
+    const sanitizedQty = Math.max(0, parseFloat(formQty) || 0);
+    const finalStatus = sanitizedQty === 0 ? "Out of Stock" : formStatus;
+
     if (editItem) {
       updatePantryItem(editItem.id, {
         name: formName.trim(),
-        quantity: parseFloat(formQty) || 1,
+        quantity: sanitizedQty,
         unit: formUnit.trim(),
         category: formCat,
         expiryDate: formExpiry,
-        status: formStatus
+        status: finalStatus
       });
     } else {
       addPantryItem({
         name: formName.trim(),
-        quantity: parseFloat(formQty) || 1,
+        quantity: sanitizedQty,
         unit: formUnit.trim(),
         category: formCat,
         expiryDate: formExpiry,
-        status: formStatus
+        status: finalStatus
       });
     }
     setShowModal(false);
@@ -291,10 +294,14 @@ export const PantryPage = () => {
                       <input 
                         type="number" 
                         step="any" 
+                        min="0"
                         className="form-control" 
                         required 
                         value={formQty}
-                        onChange={(e) => setFormQty(e.target.value)}
+                        onChange={(e) => {
+                          const val = parseFloat(e.target.value);
+                          setFormQty(isNaN(val) ? '' : Math.max(0, val));
+                        }}
                       />
                     </div>
                     <div className="col-6">
