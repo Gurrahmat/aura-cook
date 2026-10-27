@@ -1,10 +1,15 @@
 import React, { useState } from 'react';
-import { useKitchen } from '../context/KitchenContext';
-import { Timer, Plus, Play, Pause, RotateCcw, Trash2, X } from 'lucide-react';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
+import { drawerClosed } from '../store/uiSlice';
+import { timerAdded, timerRemoved, timerReset, timerToggled } from '../store/timerSlice';
+import { selectIsTimerDrawerOpen, selectTimers } from '../store/selectors';
+import { Timer, Plus, Play, Pause, RotateCcw, Trash2 } from 'lucide-react';
 
 export const MultiTimerDrawer = () => {
-  const { timers, isTimerDrawerOpen, setIsTimerDrawerOpen, createTimer, toggleTimerPause, resetTimer, deleteTimer } = useKitchen();
-  
+  const dispatch = useAppDispatch();
+  const timers = useAppSelector(selectTimers);
+  const isTimerDrawerOpen = useAppSelector(selectIsTimerDrawerOpen);
+
   const [customName, setCustomName] = useState('');
   const [customMins, setCustomMins] = useState('');
   const [showAddForm, setShowAddForm] = useState(false);
@@ -13,7 +18,7 @@ export const MultiTimerDrawer = () => {
     e.preventDefault();
     const mins = parseInt(customMins, 10);
     if (isNaN(mins) || mins <= 0) return;
-    createTimer(customName || 'Kitchen Timer', mins * 60);
+    dispatch(timerAdded({ name: customName, durationSeconds: mins * 60 }));
     setCustomName('');
     setCustomMins('');
     setShowAddForm(false);
@@ -27,9 +32,9 @@ export const MultiTimerDrawer = () => {
 
   return (
     <>
-      <div 
+      <div
         className={`timer-drawer-overlay ${isTimerDrawerOpen ? 'active' : ''}`}
-        onClick={() => setIsTimerDrawerOpen(false)}
+        onClick={() => dispatch(drawerClosed())}
       />
 
       <div className={`timer-drawer ${isTimerDrawerOpen ? 'active' : ''}`}>
@@ -37,15 +42,15 @@ export const MultiTimerDrawer = () => {
           <h4 className="font-serif mb-0 d-flex align-items-center">
             <Timer className="text-terracotta me-2" size={24} /> Kitchen Timers
           </h4>
-          <button 
-            className="btn-close" 
-            onClick={() => setIsTimerDrawerOpen(false)}
+          <button
+            className="btn-close"
+            onClick={() => dispatch(drawerClosed())}
           />
         </div>
 
         <div className="mb-3">
           {!showAddForm ? (
-            <button 
+            <button
               className="btn btn-auracook-primary w-100 d-flex align-items-center justify-content-center"
               onClick={() => setShowAddForm(true)}
             >
@@ -54,8 +59,8 @@ export const MultiTimerDrawer = () => {
           ) : (
             <form onSubmit={handleAddTimer} className="glass-panel p-3">
               <div className="mb-2">
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   className="form-control form-control-sm"
                   placeholder="Timer Name (e.g. Pasta)"
                   value={customName}
@@ -63,8 +68,8 @@ export const MultiTimerDrawer = () => {
                 />
               </div>
               <div className="mb-2">
-                <input 
-                  type="number" 
+                <input
+                  type="number"
                   className="form-control form-control-sm"
                   placeholder="Duration (Minutes)"
                   value={customMins}
@@ -81,11 +86,10 @@ export const MultiTimerDrawer = () => {
           )}
         </div>
 
-        {}
         <div className="d-flex gap-2 mb-4 overflow-x-auto pb-2">
-          <button className="btn btn-sm btn-outline-secondary text-nowrap" onClick={() => createTimer('Pasta Boiling', 8 * 60)}>8m Pasta</button>
-          <button className="btn btn-sm btn-outline-secondary text-nowrap" onClick={() => createTimer('Sauce Simmer', 12 * 60)}>12m Sauce</button>
-          <button className="btn btn-sm btn-outline-secondary text-nowrap" onClick={() => createTimer('Oven Roast', 20 * 60)}>20m Oven</button>
+          <button className="btn btn-sm btn-outline-secondary text-nowrap" onClick={() => dispatch(timerAdded({ name: 'Pasta Boiling', durationSeconds: 8 * 60 }))}>8m Pasta</button>
+          <button className="btn btn-sm btn-outline-secondary text-nowrap" onClick={() => dispatch(timerAdded({ name: 'Sauce Simmer', durationSeconds: 12 * 60 }))}>12m Sauce</button>
+          <button className="btn btn-sm btn-outline-secondary text-nowrap" onClick={() => dispatch(timerAdded({ name: 'Oven Roast', durationSeconds: 20 * 60 }))}>20m Oven</button>
         </div>
 
         <div className="flex-grow-1 overflow-y-auto">
@@ -105,14 +109,14 @@ export const MultiTimerDrawer = () => {
                   </div>
                   <div className="d-flex gap-2">
                     {t.status !== 'finished' && (
-                      <button className="btn btn-sm btn-light shadow-sm" onClick={() => toggleTimerPause(t.id)}>
+                      <button className="btn btn-sm btn-light shadow-sm" onClick={() => dispatch(timerToggled(t.id))}>
                         {t.status === 'running' ? <Pause size={16} /> : <Play size={16} />}
                       </button>
                     )}
-                    <button className="btn btn-sm btn-light shadow-sm" onClick={() => resetTimer(t.id)}>
+                    <button className="btn btn-sm btn-light shadow-sm" onClick={() => dispatch(timerReset(t.id))}>
                       <RotateCcw size={16} />
                     </button>
-                    <button className="btn btn-sm btn-outline-danger" onClick={() => deleteTimer(t.id)}>
+                    <button className="btn btn-sm btn-outline-danger" onClick={() => dispatch(timerRemoved(t.id))}>
                       <Trash2 size={16} />
                     </button>
                   </div>

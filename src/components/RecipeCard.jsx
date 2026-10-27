@@ -1,10 +1,13 @@
-import React from 'react';
-import { useKitchen } from '../context/KitchenContext';
+import React, { useMemo } from 'react';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
+import { cookingStarted } from '../store/uiSlice';
+import { makeSelectRecipeMatch } from '../store/selectors';
 import { Clock, Signal, Flame, Eye } from 'lucide-react';
 
 export const RecipeCard = ({ recipe, onOpenModal }) => {
-  const { computeRecipeMatch, navigateToCooking } = useKitchen();
-  const match = computeRecipeMatch(recipe);
+  const dispatch = useAppDispatch();
+  const selectMatch = useMemo(() => makeSelectRecipeMatch(), []);
+  const match = useAppSelector(state => selectMatch(state, recipe));
 
   let badgeClass = "badge-match-high";
   if (match.percent < 70 && match.percent >= 40) badgeClass = "badge-match-med";
@@ -13,10 +16,10 @@ export const RecipeCard = ({ recipe, onOpenModal }) => {
   return (
     <div className="glass-card h-100 d-flex flex-column">
       <div className="recipe-card-img-wrapper">
-        <img 
-          src={recipe.image} 
-          className="recipe-card-img" 
-          alt={recipe.title} 
+        <img
+          src={recipe.image}
+          className="recipe-card-img"
+          alt={recipe.title}
           onError={(e) => {
             e.target.onerror = null;
             e.target.src = "https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=800&q=80";
@@ -33,7 +36,7 @@ export const RecipeCard = ({ recipe, onOpenModal }) => {
       <div className="recipe-card-body">
         <h5 className="font-serif mb-2">{recipe.title}</h5>
         <p className="text-muted small flex-grow-1">{recipe.description}</p>
-        
+
         <div className="mb-3">
           {recipe.tags.map((t, idx) => (
             <span key={idx} className="tag-pill">{t}</span>
@@ -49,7 +52,7 @@ export const RecipeCard = ({ recipe, onOpenModal }) => {
             <small className="text-muted"><Signal size={14} className="me-1" />{recipe.difficulty}</small>
           )}
 
-          <button className="btn btn-sm btn-auracook-primary" onClick={() => navigateToCooking(recipe.id)}>
+          <button className="btn btn-sm btn-auracook-primary" onClick={() => dispatch(cookingStarted(recipe.id))}>
             <Flame size={14} className="me-1" /> Cook Now
           </button>
         </div>

@@ -1,10 +1,16 @@
 import React, { useState } from 'react';
-import { useKitchen } from '../context/KitchenContext';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
+import { pageChanged } from '../store/uiSlice';
+import { timerAdded } from '../store/timerSlice';
+import { selectActiveRecipeId, selectPantryItems, selectRecipes } from '../store/selectors';
 import { Flame, Timer, Wrench, Leaf, ArrowLeft, ArrowRight, CheckCircle, Check, X } from 'lucide-react';
 
 export const CookingPage = () => {
-  const { recipes, activeRecipeId, setCurrentPage, createTimer, pantry } = useKitchen();
-  
+  const dispatch = useAppDispatch();
+  const recipes = useAppSelector(selectRecipes);
+  const activeRecipeId = useAppSelector(selectActiveRecipeId);
+  const pantry = useAppSelector(selectPantryItems);
+
   const currentRecipe = recipes.find(r => r.id === activeRecipeId) || recipes[0];
   const [currentStepIdx, setCurrentStepIdx] = useState(0);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
@@ -43,7 +49,7 @@ export const CookingPage = () => {
 
         <div className="d-flex align-items-center gap-2 bg-white-10 p-2 rounded-3">
           <span className="text-white-50 small">Jump to step:</span>
-          <select 
+          <select
             className="form-select form-select-sm bg-dark text-white border-secondary"
             value={currentStepIdx}
             onChange={(e) => setCurrentStepIdx(parseInt(e.target.value, 10))}
@@ -69,9 +75,9 @@ export const CookingPage = () => {
 
             <div className="d-flex align-items-center gap-2">
               {step.timerMinutes > 0 && (
-                <button 
+                <button
                   className="btn btn-auracook-primary btn-sm"
-                  onClick={() => createTimer(`Step ${step.step} Timer`, step.timerMinutes * 60)}
+                  onClick={() => dispatch(timerAdded({ name: `Step ${step.step} Timer`, durationSeconds: step.timerMinutes * 60 }))}
                 >
                   <Timer size={14} className="me-1" /> Start {step.timerMinutes}m Timer
                 </button>
@@ -110,8 +116,8 @@ export const CookingPage = () => {
                   step.ingredients.map((ing, idx) => {
                     const hasItem = inStockNames.some(p => p.includes(ing.toLowerCase()) || ing.toLowerCase().includes(p));
                     return (
-                      <span 
-                        key={idx} 
+                      <span
+                        key={idx}
                         className={`step-tool-tag ${hasItem ? 'bg-dark text-white fw-bold border-0 shadow-sm' : 'bg-light text-muted border border-secondary-subtle'}`}
                       >
                         {hasItem ? <Check size={12} className="me-1 text-success" /> : <X size={12} className="me-1 text-danger opacity-75" />}
@@ -127,7 +133,7 @@ export const CookingPage = () => {
           </div>
 
           <div className="d-flex align-items-center justify-content-between pt-2">
-            <button 
+            <button
               className="btn btn-auracook-secondary btn-lg"
               disabled={currentStepIdx === 0}
               onClick={() => handleStepNavigation(-1)}
@@ -135,7 +141,7 @@ export const CookingPage = () => {
               <ArrowLeft size={18} className="me-2" /> Previous Step
             </button>
 
-            <button 
+            <button
               className={`btn btn-lg ${currentStepIdx === totalSteps - 1 ? 'btn-success' : 'btn-auracook-primary'}`}
               onClick={() => handleStepNavigation(1)}
             >
@@ -159,10 +165,10 @@ export const CookingPage = () => {
                 <p className="text-muted">You have successfully completed this recipe!</p>
               </div>
               <div className="d-flex justify-content-center gap-3">
-                <button className="btn btn-auracook-primary" onClick={() => { setShowCompletionModal(false); setCurrentPage('recipes'); }}>
+                <button className="btn btn-auracook-primary" onClick={() => { setShowCompletionModal(false); dispatch(pageChanged('recipes')); }}>
                   Explore More Recipes
                 </button>
-                <button className="btn btn-outline-secondary" onClick={() => { setShowCompletionModal(false); setCurrentPage('home'); }}>
+                <button className="btn btn-outline-secondary" onClick={() => { setShowCompletionModal(false); dispatch(pageChanged('home')); }}>
                   Back to Home
                 </button>
               </div>

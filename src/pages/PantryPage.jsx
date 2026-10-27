@@ -1,6 +1,9 @@
-import React, { useState } from 'react';
-import { useKitchen } from '../context/KitchenContext';
-import { Search, Plus, Sparkles, Edit, Trash2, ChefHat, X } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
+import { cookingStarted } from '../store/uiSlice';
+import { itemAdded, itemDeleted, itemUpdated, staplesRestored } from '../store/pantrySlice';
+import { makeSelectRankedRecipes, selectPantryItems } from '../store/selectors';
+import { Search, Plus, Sparkles, Edit, Trash2, ChefHat } from 'lucide-react';
 
 const COMMON_INGREDIENTS = [
   { name: "Garlic", category: "Produce", unit: "cloves" },
@@ -37,16 +40,10 @@ const COMMON_INGREDIENTS = [
 ];
 
 export const PantryPage = () => {
-  const { 
-    pantry, 
-    recipes, 
-    addPantryItem, 
-    updatePantryItem, 
-    deletePantryItem, 
-    resetPantryToStaples, 
-    computeRecipeMatch,
-    navigateToCooking 
-  } = useKitchen();
+  const dispatch = useAppDispatch();
+  const pantry = useAppSelector(selectPantryItems);
+  const selectRankedRecipes = useMemo(() => makeSelectRankedRecipes(), []);
+  const recipeMatches = useAppSelector(selectRankedRecipes);
 
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('all');
@@ -89,24 +86,19 @@ export const PantryPage = () => {
     const sanitizedQty = Math.max(0, parseFloat(formQty) || 0);
     const finalStatus = sanitizedQty === 0 ? "Out of Stock" : formStatus;
 
+    const fields = {
+      name: formName.trim(),
+      quantity: sanitizedQty,
+      unit: formUnit.trim(),
+      category: formCat,
+      expiryDate: formExpiry,
+      status: finalStatus
+    };
+
     if (editItem) {
-      updatePantryItem(editItem.id, {
-        name: formName.trim(),
-        quantity: sanitizedQty,
-        unit: formUnit.trim(),
-        category: formCat,
-        expiryDate: formExpiry,
-        status: finalStatus
-      });
+      dispatch(itemUpdated({ id: editItem.id, fields }));
     } else {
-      addPantryItem({
-        name: formName.trim(),
-        quantity: sanitizedQty,
-        unit: formUnit.trim(),
-        category: formCat,
-        expiryDate: formExpiry,
-        status: finalStatus
-      });
+      dispatch(itemAdded(fields));
     }
     setShowModal(false);
   };
@@ -117,11 +109,6 @@ export const PantryPage = () => {
     return matchSearch && matchCat;
   });
 
-  const recipeMatches = recipes.map(recipe => ({
-    recipe,
-    match: computeRecipeMatch(recipe)
-  })).sort((a, b) => b.match.percent - a.match.percent);
-
   return (
     <div className="container py-4">
       <div className="d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-4 gap-3">
@@ -130,7 +117,7 @@ export const PantryPage = () => {
           <p className="text-muted mb-0">Track kitchen stock, monitor expiry dates, and unlock recipe recommendations.</p>
         </div>
         <div className="d-flex flex-wrap gap-2">
-          <button className="btn btn-outline-secondary" onClick={resetPantryToStaples}>
+          <button className="btn btn-outline-secondary" onClick={() => dispatch(staplesRestored())}>
             <Sparkles size={16} className="me-1" /> Populate Common Staples
           </button>
           <button className="btn btn-auracook-primary" onClick={openAddModal}>
@@ -144,9 +131,9 @@ export const PantryPage = () => {
           <div className="col-md-6 col-lg-5">
             <div className="input-group">
               <span className="input-group-text bg-white border-end-0"><Search size={16} className="text-muted" /></span>
-              <input 
-                type="text" 
-                className="form-control border-start-0" 
+              <input
+                type="text"
+                className="form-control border-start-0"
                 placeholder="Search pantry items..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
@@ -209,7 +196,7 @@ export const PantryPage = () => {
                             <button className="btn btn-sm btn-outline-secondary me-1" onClick={() => openEditModal(item)}>
                               <Edit size={14} />
                             </button>
-                            <button className="btn btn-sm btn-outline-danger" onClick={() => deletePantryItem(item.id)}>
+                            <button className="btn btn-sm btn-outline-danger" onClick={() => dispatch(itemDeleted({ id: item.id, name: item.name }))}>
                               <Trash2 size={14} />
                             </button>
                           </td>
@@ -239,10 +226,10 @@ export const PantryPage = () => {
                   <span className={`badge ${match.percent >= 70 ? 'bg-success' : 'bg-warning text-dark'} mb-1 d-block`}>
                     {match.percent}%
                   </span>
-                  <button 
+                  <button
                     className="btn btn-auracook-primary py-0 px-2 text-white"
                     style={{ fontSize: '0.75rem' }}
-                    onClick={() => navigateToCooking(recipe.id)}
+                    onClick={() => dispatch(cookingStarted(recipe.id))}
                   >
                     Cook
                   </button>
@@ -265,7 +252,7 @@ export const PantryPage = () => {
                 <div className="modal-body p-4">
                   <div className="mb-3">
                     <label className="form-label font-sans fw-bold small">Ingredient Name</label>
-                    <select 
+                    <select
                       className="form-select"
                       required
                       value={formName}
@@ -291,12 +278,12 @@ export const PantryPage = () => {
                   <div className="row g-3 mb-3">
                     <div className="col-6">
                       <label className="form-label font-sans fw-bold small">Quantity</label>
-                      <input 
-                        type="number" 
-                        step="any" 
+                      <input
+                        type="number"
+                        step="any"
                         min="0"
-                        className="form-control" 
-                        required 
+                        className="form-control"
+                        required
                         value={formQty}
                         onChange={(e) => {
                           const val = parseFloat(e.target.value);
@@ -306,9 +293,9 @@ export const PantryPage = () => {
                     </div>
                     <div className="col-6">
                       <label className="form-label font-sans fw-bold small">Unit</label>
-                      <input 
-                        type="text" 
-                        className="form-control" 
+                      <input
+                        type="text"
+                        className="form-control"
                         placeholder="cloves, g, ml"
                         value={formUnit}
                         onChange={(e) => setFormUnit(e.target.value)}
@@ -330,8 +317,8 @@ export const PantryPage = () => {
                     </div>
                     <div className="col-6">
                       <label className="form-label font-sans fw-bold small">Expiry Date</label>
-                      <input 
-                        type="date" 
+                      <input
+                        type="date"
                         className="form-control"
                         value={formExpiry}
                         onChange={(e) => setFormExpiry(e.target.value)}

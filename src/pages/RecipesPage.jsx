@@ -1,29 +1,35 @@
-import React, { useState } from 'react';
-import { useKitchen } from '../context/KitchenContext';
+import React, { useMemo, useState } from 'react';
+import { useAppSelector } from '../store/hooks';
+import { selectPantryItems, selectRecipes } from '../store/selectors';
+import { computeRecipeMatch } from '../utils/match';
 import { RecipeCard } from '../components/RecipeCard';
 import { RecipeDetailModal } from '../components/RecipeDetailModal';
 import { Search, RotateCcw, UtensilsCrossed, ShoppingBag } from 'lucide-react';
 
 export const RecipesPage = () => {
-  const { recipes, computeRecipeMatch } = useKitchen();
+  const recipes = useAppSelector(selectRecipes);
+  const pantry = useAppSelector(selectPantryItems);
+
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('all');
   const [difficulty, setDifficulty] = useState('all');
   const [onlyPantryMatch, setOnlyPantryMatch] = useState(false);
   const [selectedRecipeModal, setSelectedRecipeModal] = useState(null);
 
-  const filteredRecipes = recipes.filter(recipe => {
-    const matchSearch = recipe.title.toLowerCase().includes(search.toLowerCase()) ||
-                        recipe.description.toLowerCase().includes(search.toLowerCase()) ||
-                        recipe.ingredients.some(i => i.name.toLowerCase().includes(search.toLowerCase()));
-    const matchCategory = category === 'all' || recipe.category === category;
-    const matchDifficulty = difficulty === 'all' || recipe.difficulty === difficulty;
+  const filteredRecipes = useMemo(() => {
+    const query = search.toLowerCase();
 
-    const matchInfo = computeRecipeMatch(recipe);
-    const matchPantry = !onlyPantryMatch || matchInfo.percent >= 70;
+    return recipes.filter(recipe => {
+      const matchSearch = recipe.title.toLowerCase().includes(query) ||
+        recipe.description.toLowerCase().includes(query) ||
+        recipe.ingredients.some(i => i.name.toLowerCase().includes(query));
+      const matchCategory = category === 'all' || recipe.category === category;
+      const matchDifficulty = difficulty === 'all' || recipe.difficulty === difficulty;
+      const matchPantry = !onlyPantryMatch || computeRecipeMatch(recipe, pantry).percent >= 70;
 
-    return matchSearch && matchCategory && matchDifficulty && matchPantry;
-  });
+      return matchSearch && matchCategory && matchDifficulty && matchPantry;
+    });
+  }, [recipes, pantry, search, category, difficulty, onlyPantryMatch]);
 
   const handleResetFilters = () => {
     setSearch('');
@@ -42,9 +48,9 @@ export const RecipesPage = () => {
 
         <div className="mt-3 mt-md-0">
           <div className="form-check form-switch p-2 glass-panel ps-5 pe-3 d-inline-flex align-items-center">
-            <input 
-              className="form-check-input me-2" 
-              type="checkbox" 
+            <input
+              className="form-check-input me-2"
+              type="checkbox"
               id="filter-pantry-match"
               checked={onlyPantryMatch}
               onChange={(e) => setOnlyPantryMatch(e.target.checked)}
@@ -61,9 +67,9 @@ export const RecipesPage = () => {
           <div className="col-lg-4">
             <div className="input-group">
               <span className="input-group-text bg-white border-end-0"><Search size={16} className="text-muted" /></span>
-              <input 
-                type="text" 
-                className="form-control border-start-0" 
+              <input
+                type="text"
+                className="form-control border-start-0"
                 placeholder="Search recipe or ingredient..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
@@ -115,9 +121,9 @@ export const RecipesPage = () => {
       )}
 
       {selectedRecipeModal && (
-        <RecipeDetailModal 
-          recipe={selectedRecipeModal} 
-          onClose={() => setSelectedRecipeModal(null)} 
+        <RecipeDetailModal
+          recipe={selectedRecipeModal}
+          onClose={() => setSelectedRecipeModal(null)}
         />
       )}
     </div>

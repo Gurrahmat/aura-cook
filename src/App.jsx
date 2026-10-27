@@ -1,20 +1,23 @@
 import React from 'react';
-import { KitchenProvider, useKitchen } from './context/KitchenContext';
+import { useAppSelector } from './store/hooks';
 import { Navbar } from './components/Navbar';
 import { MultiTimerDrawer } from './components/MultiTimerDrawer';
 import { ToastContainer } from './components/ToastContainer';
+import { TimerEngine } from './components/TimerEngine';
 import { HomePage } from './pages/HomePage';
 import { RecipesPage } from './pages/RecipesPage';
 import { CookingPage } from './pages/CookingPage';
 import { PantryPage } from './pages/PantryPage';
+import { selectCurrentPage } from './store/selectors';
 
 const AppContent = () => {
-  const { currentPage } = useKitchen();
+  const currentPage = useAppSelector(selectCurrentPage);
 
   return (
     <div className="app-layout">
+      <TimerEngine />
       <Navbar />
-      
+
       <main className="py-3">
         {currentPage === 'home' && <HomePage />}
         {currentPage === 'recipes' && <RecipesPage />}
@@ -29,9 +32,5 @@ const AppContent = () => {
 };
 
 export default function App() {
-  return (
-    <KitchenProvider>
-      <AppContent />
-    </KitchenProvider>
-  );
+  return <AppContent />;
 }

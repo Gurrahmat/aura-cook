@@ -1,9 +1,10 @@
 import React from 'react';
-import { useKitchen } from '../context/KitchenContext';
+import { useAppSelector } from '../store/hooks';
+import { selectToasts } from '../store/selectors';
 import { CheckCircle, AlertTriangle, Info } from 'lucide-react';
 
 export const ToastContainer = () => {
-  const { toasts } = useKitchen();
+  const toasts = useAppSelector(selectToasts);
 
   return (
     <div className="toast-container-auracook">

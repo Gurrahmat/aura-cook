@@ -1,9 +1,13 @@
 import React from 'react';
-import { useKitchen } from '../context/KitchenContext';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
+import { cookingStarted } from '../store/uiSlice';
+import { selectPantryItems } from '../store/selectors';
 import { X, ShoppingBag, Check, Flame } from 'lucide-react';
 
 export const RecipeDetailModal = ({ recipe, onClose }) => {
-  const { pantry, navigateToCooking } = useKitchen();
+  const dispatch = useAppDispatch();
+  const pantry = useAppSelector(selectPantryItems);
+
   if (!recipe) return null;
 
   const pantryNames = pantry.filter(i => i.status !== 'Out of Stock').map(i => i.name.toLowerCase());
@@ -20,10 +24,10 @@ export const RecipeDetailModal = ({ recipe, onClose }) => {
           <div className="modal-body p-4">
             <div className="row g-4">
               <div className="col-md-5">
-                <img 
-                  src={recipe.image} 
-                  className="img-fluid rounded-4 shadow-sm mb-3" 
-                  alt={recipe.title} 
+                <img
+                  src={recipe.image}
+                  className="img-fluid rounded-4 shadow-sm mb-3"
+                  alt={recipe.title}
                   onError={(e) => {
                     e.target.onerror = null;
                     e.target.src = "https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=800&q=80";
@@ -69,12 +73,12 @@ export const RecipeDetailModal = ({ recipe, onClose }) => {
 
           <div className="modal-footer border-0 p-4 pt-0">
             <button type="button" className="btn btn-secondary" onClick={onClose}>Close</button>
-            <button 
-              type="button" 
+            <button
+              type="button"
               className="btn btn-auracook-primary"
               onClick={() => {
                 onClose();
-                navigateToCooking(recipe.id);
+                dispatch(cookingStarted(recipe.id));
               }}
             >
               <Flame size={16} className="me-1" /> Start Cooking Mode

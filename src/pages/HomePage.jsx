@@ -1,10 +1,13 @@
 import React from 'react';
-import { useKitchen } from '../context/KitchenContext';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
+import { drawerOpened, pageChanged } from '../store/uiSlice';
+import { selectRecipes } from '../store/selectors';
 import { RecipeCard } from '../components/RecipeCard';
 import { Sparkles, Compass, Play, Warehouse, Timer, Flame, ShoppingBag, ArrowRight } from 'lucide-react';
 
 export const HomePage = () => {
-  const { recipes, setCurrentPage, setIsTimerDrawerOpen } = useKitchen();
+  const dispatch = useAppDispatch();
+  const recipes = useAppSelector(selectRecipes);
 
   return (
     <div className="container">
@@ -19,13 +22,13 @@ export const HomePage = () => {
               Welcome to AuraCook – your ambient kitchen companion. Experience step-by-step interactive recipe guidance, multiple simultaneous timers, and intelligent pantry recommendations.
             </p>
             <div className="d-flex flex-wrap gap-3">
-              <button className="btn btn-auracook-primary btn-lg" onClick={() => setCurrentPage('recipes')}>
+              <button className="btn btn-auracook-primary btn-lg" onClick={() => dispatch(pageChanged('recipes'))}>
                 <Compass size={18} className="me-2" /> Discover Recipes
               </button>
-              <button className="btn btn-auracook-secondary btn-lg bg-white text-dark" onClick={() => setCurrentPage('cooking')}>
+              <button className="btn btn-auracook-secondary btn-lg bg-white text-dark" onClick={() => dispatch(pageChanged('cooking'))}>
                 <Play size={18} className="me-2" /> Start Cooking Mode
               </button>
-              <button className="btn btn-outline-light btn-lg" onClick={() => setCurrentPage('pantry')}>
+              <button className="btn btn-outline-light btn-lg" onClick={() => dispatch(pageChanged('pantry'))}>
                 <Warehouse size={18} className="me-2" /> Digital Pantry
               </button>
             </div>
@@ -48,7 +51,7 @@ export const HomePage = () => {
             <p className="text-muted small flex-grow-1">
               Set and monitor multiple simultaneous countdown timers for boiling, searing, and oven baking.
             </p>
-            <button className="btn btn-sm btn-auracook-secondary mt-auto" onClick={() => setIsTimerDrawerOpen(true)}>
+            <button className="btn btn-sm btn-auracook-secondary mt-auto" onClick={() => dispatch(drawerOpened())}>
               Open Timer Drawer
             </button>
           </div>
@@ -68,7 +71,7 @@ export const HomePage = () => {
             <p className="text-muted small flex-grow-1">
               Follow clean, structured step instructions with tools, ingredients, and built-in timer integration.
             </p>
-            <button className="btn btn-sm btn-auracook-secondary mt-auto" onClick={() => setCurrentPage('cooking')}>
+            <button className="btn btn-sm btn-auracook-secondary mt-auto" onClick={() => dispatch(pageChanged('cooking'))}>
               Start Cooking Mode
             </button>
           </div>
@@ -88,7 +91,7 @@ export const HomePage = () => {
             <p className="text-muted small flex-grow-1">
               Track ingredients in stock and instantly filter recipes you can prepare right now with available pantry items.
             </p>
-            <button className="btn btn-sm btn-auracook-secondary mt-auto" onClick={() => setCurrentPage('pantry')}>
+            <button className="btn btn-sm btn-auracook-secondary mt-auto" onClick={() => dispatch(pageChanged('pantry'))}>
               View My Stock
             </button>
           </div>
@@ -101,7 +104,7 @@ export const HomePage = () => {
             <span className="text-terracotta fw-bold text-uppercase small">Pantry Powered</span>
             <h2 className="h3 font-serif mb-0">What Can You Cook Today?</h2>
           </div>
-          <button className="btn btn-link text-terracotta fw-bold text-decoration-none" onClick={() => setCurrentPage('recipes')}>
+          <button className="btn btn-link text-terracotta fw-bold text-decoration-none" onClick={() => dispatch(pageChanged('recipes'))}>
             View All Library <ArrowRight size={16} className="ms-1" />
           </button>
         </div>
