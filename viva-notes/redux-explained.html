@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Redux Toolkit — explained through AuraCook</title>
+<style>
+  :root{--terracotta:#E07A5F;--terracotta-dark:#C85F45;--sage:#3D405B;--sage-dark:#2B2D42;
+    --cream:#F8F5EE;--card:#fff;--soft:#FAF7F2;--amber:#F2CC8F;--green:#2A9D8F;--red:#C0392B;
+    --ink:#2D2926;--muted:#6C757D;--line:#e8e2d6}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--cream);color:var(--ink);line-height:1.62;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:820px;margin:0 auto;padding:30px 18px 90px}
+  h1,h2,h3{font-family:Georgia,"Times New Roman",serif;letter-spacing:-.01em;margin:0}
+  h1{font-size:1.8rem;line-height:1.25}
+  h2{font-size:1.3rem;margin:0 0 4px}
+  h3{font-size:1.02rem;margin:20px 0 6px}
+  p{margin:0 0 12px}
+  .badge{display:inline-block;background:var(--sage);color:#fff;font-size:.66rem;letter-spacing:.07em;
+    text-transform:uppercase;padding:4px 10px;border-radius:999px;margin-bottom:10px;font-weight:700}
+  .lede{color:var(--muted);font-size:.94rem}
+  section{background:var(--card);border-radius:18px;padding:24px;margin:18px 0;box-shadow:0 6px 20px rgba(30,27,24,.07)}
+  .num{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:8px;
+    background:var(--terracotta);color:#fff;font-weight:800;font-size:.8rem;margin-right:9px;vertical-align:middle}
+  code{background:#efe9dd;padding:1px 5px;border-radius:5px;font-size:.88em;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  pre{background:#221f1c;color:#eae4d8;border-radius:12px;padding:16px;overflow-x:auto;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.81rem;line-height:1.62;margin:12px 0}
+  pre .c{color:#8d8779;font-style:italic}
+  table{width:100%;border-collapse:collapse;font-size:.87rem;margin:12px 0}
+  th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-size:.68rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+  tr:last-child td{border-bottom:none}
+  ul,ol{margin:0 0 12px;padding-left:22px}li{margin:5px 0}
+  .call{background:var(--sage);color:#fff;border-radius:12px;padding:14px 16px;margin:14px 0;font-size:.92rem}
+  .call b{color:var(--amber)}
+  .say{background:#fff8ef;border-left:4px solid var(--amber);border-radius:0 10px 10px 0;padding:12px 16px;margin:14px 0;font-size:.92rem}
+  .say strong{color:var(--terracotta-dark);display:block;font-size:.7rem;text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}
+  .try{background:#eef6f4;border-left:4px solid var(--green);border-radius:0 10px 10px 0;padding:12px 16px;margin:14px 0;font-size:.92rem}
+  .try strong{color:#1F7A70;display:block;font-size:.7rem;text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}
+  .warn{background:#fdf0ee;border-left:4px solid var(--red);border-radius:0 10px 10px 0;padding:12px 16px;margin:14px 0;font-size:.92rem}
+  .warn strong{color:#a83226;display:block;font-size:.7rem;text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}
+  details{background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin:10px 0}
+  details summary{cursor:pointer;font-weight:700;color:var(--sage);font-size:.92rem}
+  details[open] summary{margin-bottom:8px}
+  .tree{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.82rem;background:#221f1c;color:#eae4d8;
+    border-radius:12px;padding:16px;overflow-x:auto;line-height:1.7;margin:12px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <span class="badge">Just added · read this before the viva</span>
+  <h1>Redux Toolkit, explained through your own app</h1>
+  <p class="lede" style="margin-top:8px">
+    The state layer of AuraCook was rewritten today: <code>KitchenContext.jsx</code> is gone, and a Redux store took
+    its place. This page explains what that means, in plain language, using only code you now own.
+  </p>
+
+  <div class="call">
+    <b>The one-sentence idea.</b> Redux is a <b>single object</b> that holds all the shared data in your app, plus a
+    strict rule for changing it: you never edit the object directly, you <b>send a message describing what happened</b>,
+    and a plain function decides how the object changes. Every screen that cares reads its slice of that object.
+  </div>
+
+  <!-- 1 -->
+  <section>
+    <h2><span class="num">1</span>Why we changed anything</h2>
+    <p>The old version used <b>Context</b>. It worked, but it had a real flaw you can now explain:</p>
+    <ul>
+      <li>The provider held <code>pantry</code>, <code>timers</code>, page state and toasts in <b>one object</b>.</li>
+      <li>Whenever <b>any</b> part of that object changed, <b>every</b> component that read the context re-rendered.</li>
+      <li>Your timers tick <b>once per second</b>. So the pantry table, the toasts, the navbar — everything — re-rendered
+      once per second even though nothing about them had changed.</li>
+    </ul>
+    <p>With Redux, each component says <em>exactly which value it wants</em>. If that value didn't change, the component
+    does not re-render. That single difference is the whole reason for the migration.</p>
+    <div class="say">
+      <strong>Say this in the viva</strong>
+      "We started on Context API. It worked, but the provider's value object was recreated on every render and our timer
+      ticks every second, so every consumer re-rendered once a second — including the pantry table, which doesn't read
+      timers. We moved to Redux Toolkit so each component subscribes with <code>useSelector</code> to just the slice it
+      needs."
+    </div>
+  </section>
+
+  <!-- 2 -->
+  <section>
+    <h2><span class="num">2</span>The five words you must know</h2>
+    <table>
+      <tr><th>Word</th><th>Plain meaning</th><th>In your app</th></tr>
+      <tr>
+        <td><b>Store</b></td>
+        <td>The single object holding all shared data.</td>
+        <td><code>src/store/store.js</code> — one store with three sections.</td>
+      </tr>
+      <tr>
+        <td><b>Slice</b></td>
+        <td>One section of that object, with its own rules for changing it.</td>
+        <td><code>pantry</code> (the stock), <code>timers</code>, <code>ui</code> (page, drawer, toasts).</td>
+      </tr>
+      <tr>
+        <td><b>Action</b></td>
+        <td>A message: "this happened". A plain object with a type and a payload.</td>
+        <td><code>{ type: 'pantry/itemAdded', payload: {...} }</code></td>
+      </tr>
+      <tr>
+        <td><b>Reducer</b></td>
+        <td>A pure function: given the old state and an action, return the new state.</td>
+        <td>The four functions inside <code>pantrySlice</code>.</td>
+      </tr>
+      <tr>
+        <td><b>Dispatch / Selector</b></td>
+        <td>Dispatch = send an action. Selector = read a value out.</td>
+        <td><code>dispatch(itemAdded(fields))</code> · <code>useSelector(selectPantryItems)</code></td>
+      </tr>
+    </table>
+    <div class="call">
+      <b>The cycle, memorise it:</b> component → <code>dispatch(action)</code> → reducer computes new state →
+      store notifies → components whose selected value changed re-render.
+    </div>
+  </section>
+
+  <!-- 3 -->
+  <section>
+    <h2><span class="num">3</span>Your store, file by file</h2>
+    <div class="tree">src/store/
+├── store.js          configureStore + listener middleware + saves the pantry
+├── pantrySlice.js    the stock: add, update, delete, restore staples
+├── timerSlice.js     the timers: add, pause/resume, reset, delete, tick
+├── uiSlice.js        current page, active recipe, drawer open, toasts
+├── selectors.js      read helpers + memoised (cached) calculations
+└── hooks.js          useAppDispatch / useAppSelector
+
+src/utils/
+├── match.js          computeRecipeMatch(recipe, pantry)  ← plain function
+└── sound.js          playTimerBell()
+
+src/components/TimerEngine.jsx   renders nothing; dispatches tick() every second</div>
+    <p><b>Why <code>utils/</code> is separate:</b> <code>computeRecipeMatch</code> is maths, not state. Keeping it as a pure
+    function means the selector can cache it and you can test it without React.</p>
+  </section>
+
+  <!-- 4 -->
+  <section>
+    <h2><span class="num">4</span>A reducer, line by line</h2>
+    <p>This is the real code from <code>pantrySlice.js</code>, simplified:</p>
+    <pre><span class="c">// a slice = a section of the store</span>
+<span class="k">const</span> pantrySlice = <span class="f">createSlice</span>({
+  name: <span class="s">'pantry'</span>,                       <span class="c">// actions become 'pantry/itemAdded'</span>
+  initialState: { items: <span class="f">loadPantry</span>() }, <span class="c">// read from localStorage once</span>
+  reducers: {
+    <span class="f">itemAdded</span>: {
+      <span class="f">reducer</span>(state, action) {
+        state.items.<span class="f">push</span>(action.payload);   <span class="c">// looks like a mutation...</span>
+      },
+      <span class="f">prepare</span>(item) {                       <span class="c">// ...but prepare ran first</span>
+        <span class="k">return</span> { payload: <span class="f">normalize</span>({ ...item, id: <span class="s">`p_${Date.now()}`</span> }) };
+      }
+    },
+    <span class="f">itemDeleted</span>(state, action) {
+      state.items = state.items.<span class="f">filter</span>(i =&gt; i.id !== action.payload.id);
+    }
+  }
+});</pre>
+    <ul>
+      <li><b><code>state.items.push(...)</code> is not a real mutation.</b> RTK wraps the state in a draft (using a library
+      called <b>Immer</b>); your push is recorded and a new immutable array is produced. That's why reducers can look
+      normal while still respecting "never mutate state".</li>
+      <li><b><code>prepare</code></b> runs <i>before</i> the reducer. It's where we generate the id and clamp the quantity.
+      Why? Because a reducer must be a <i>pure</i> function — same input, same output. Generating a random id or reading
+      the clock inside a reducer would break that.</li>
+      <li><b>The invariant lives here, not in the form:</b> <code>normalize()</code> forces quantity ≥ 0 and sets
+      "Out of Stock" when it hits 0. So even if someone dispatches <code>itemAdded</code> from the console with
+      <code>-5</code>, the rule still holds.</li>
+    </ul>
+    <details>
+      <summary>Quiz: why can't the reducer play the timer bell?</summary>
+      <p>Because a reducer must have no side effects — no audio, no network, no timers. If it did, React's development
+      double-invocation (StrictMode) could ring the bell twice. Side effects go in <b>listener middleware</b>, which
+      runs after the reducer.</p>
+    </details>
+  </section>
+
+  <!-- 5 -->
+  <section>
+    <h2><span class="num">5</span>Reading state: <code>useSelector</code></h2>
+    <pre><span class="k">const</span> toasts = <span class="f">useAppSelector</span>(<span class="f">selectToasts</span>);          <span class="c">// ToastContainer</span>
+<span class="k">const</span> currentPage = <span class="f">useAppSelector</span>(<span class="f">selectCurrentPage</span>);  <span class="c">// App.jsx / Navbar</span>
+<span class="k">const</span> timerCount = <span class="f">useAppSelector</span>(<span class="f">selectTimerCount</span>);    <span class="c">// the navbar badge</span></pre>
+    <p>Each of those subscribes to <b>one</b> value. The toast layer does not re-render when a timer ticks, because it
+    never asked for timers.</p>
+    <h3>The clever bit: cached calculations</h3>
+    <pre><span class="c">// selectors.js — a factory, so every card gets its OWN cache</span>
+<span class="k">export const</span> <span class="f">makeSelectRecipeMatch</span> = () =&gt;
+  <span class="f">createSelector</span>(
+    [(state, recipe) =&gt; recipe, selectPantryItems],
+    (recipe, pantry) =&gt; <span class="f">computeRecipeMatch</span>(recipe, pantry)
+  );
+
+<span class="c">// RecipeCard.jsx</span>
+<span class="k">const</span> selectMatch = <span class="f">useMemo</span>(() =&gt; <span class="f">makeSelectRecipeMatch</span>(), []);
+<span class="k">const</span> match = <span class="f">useAppSelector</span>(state =&gt; <span class="f">selectMatch</span>(state, recipe));</pre>
+    <p><code>createSelector</code> remembers the last inputs it saw and returns the cached result when they haven't changed.
+    The factory matters: a <b>shared</b> selector has only one cache slot, so six cards would keep evicting each other.
+    Each card making its own gives six independent one-slot caches.</p>
+    <div class="say">
+      <strong>If they ask "what is memoisation?"</strong>
+      "Remembering the result of a calculation and reusing it while the inputs stay the same. Our match percentage is
+      recomputed only when that recipe or the pantry changes — not on every keystroke, and not on every timer tick."
+    </div>
+  </section>
+
+  <!-- 6 -->
+  <section>
+    <h2><span class="num">6</span>Changing state: <code>dispatch</code></h2>
+    <p>From <code>PantryPage.jsx</code>, the submit handler ends with one line:</p>
+    <pre><span class="k">if</span> (editItem) {
+  <span class="f">dispatch</span>(<span class="f">itemUpdated</span>({ id: editItem.id, fields }));
+} <span class="k">else</span> {
+  <span class="f">dispatch</span>(<span class="f">itemAdded</span>(fields));
+}
+<span class="f">setShowModal</span>(<span class="k">false</span>);   <span class="c">// local UI state stays local</span></pre>
+    <p>Two things to notice, and both are viva answers:</p>
+    <ul>
+      <li>The component does <b>not</b> build the id or clamp the number or decide the status — the reducer does. The
+      component just reports what the user did.</li>
+      <li>The modal open/closed flag is still local <code>useState</code>. <b>Not everything belongs in Redux.</b>
+      Rule: shared or long-lived → store; one screen and temporary → <code>useState</code>.</li>
+    </ul>
+  </section>
+
+  <!-- 7 -->
+  <section>
+    <h2><span class="num">7</span>Side effects: listener middleware</h2>
+    <p>Some things must happen in response to a change but are not state: ringing the bell, showing a toast, saving to
+    localStorage. Those live in <code>store.js</code>:</p>
+    <pre><span class="f">listenerMiddleware</span>.<span class="f">startListening</span>({
+  <span class="f">actionCreator</span>: timersTicked,               <span class="c">// "when a tick happens..."</span>
+  <span class="f">effect</span>: (action, api) =&gt; {
+    <span class="k">const</span> { timers } = api.<span class="f">getState</span>().timers;   <span class="c">// read the NEW state</span>
+    timers
+      .<span class="f">filter</span>(t =&gt; t.status === <span class="s">'finished'</span> &amp;&amp; !t.notified)
+      .<span class="f">forEach</span>(timer =&gt; {
+        <span class="f">playTimerBell</span>();
+        api.<span class="f">dispatch</span>(<span class="f">timerNotified</span>(timer.id));   <span class="c">// so it fires once</span>
+        api.<span class="f">dispatch</span>(<span class="f">toastAdded</span>(<span class="s">`⏰ "${timer.name}" done!`</span>, <span class="s">'warning'</span>));
+      });
+  }
+});</pre>
+    <p>And the toast queue cleans itself up the same way: a listener waits 4 seconds, then dispatches <code>toastRemoved</code>.</p>
+    <div class="call">
+      <b>This is the line that scores marks:</b> "Reducers stay pure; every side effect — the bell, the toast timeouts and
+      persistence — lives in listener middleware." It shows you know <i>where</i> things belong, not just that they work.
+    </div>
+  </section>
+
+  <!-- 8 -->
+  <section>
+    <h2><span class="num">8</span>Saving the pantry</h2>
+    <pre><span class="c">// store.js — a store is not a component, so there is no useEffect</span>
+<span class="k">let</span> lastPantryItems = store.<span class="f">getState</span>().pantry.items;
+
+store.<span class="f">subscribe</span>(() =&gt; {
+  <span class="k">const</span> items = store.<span class="f">getState</span>().pantry.items;
+  <span class="k">if</span> (items !== lastPantryItems) {      <span class="c">// only when it really changed</span>
+    lastPantryItems = items;
+    <span class="f">savePantry</span>(items);                   <span class="c">// localStorage.setItem(JSON)</span>
+  }
+});</pre>
+    <p>Reading happens once, in the slice's <code>initialState: { items: loadPantry() }</code>; writing happens on every
+    change. The reference check matters: without it, the one-second timer tick would write to <code>localStorage</code>
+    every second.</p>
+  </section>
+
+  <!-- 9 -->
+  <section>
+    <h2><span class="num">9</span>What you can now answer that others can't</h2>
+    <table>
+      <tr><th>Question</th><th>Your answer in one line</th></tr>
+      <tr><td>Why Redux over Context?</td><td>Narrow subscriptions — only components reading the changed slice re-render.</td></tr>
+      <tr><td>What's a slice?</td><td>One section of the store with its own reducers; `createSlice` generates the actions and the reducer together.</td></tr>
+      <tr><td>Why does `state.items.push` work?</td><td>Immer — it records the change on a draft and produces an immutable copy.</td></tr>
+      <tr><td>Why `prepare`?</td><td>To build the payload (ids, clamping) before the reducer, keeping the reducer pure.</td></tr>
+      <tr><td>Where do side effects go?</td><td>Listener middleware, never a reducer.</td></tr>
+      <tr><td>What's `createSelector` for?</td><td>Memoisation — recompute the match percentage only when recipe or pantry changes.</td></tr>
+      <tr><td>Is everything in Redux now?</td><td>No. The search box, filters, open modal, step index and form fields are local `useState`.</td></tr>
+      <tr><td>How do you debug it?</td><td>Redux DevTools: every action with its payload, and the state before/after.</td></tr>
+    </table>
+    <div class="try">
+      <strong>Prove it to yourself in 60 seconds (no laptop needed)</strong>
+      Say out loud, in order: "The user submits the pantry form → the component dispatches <code>itemAdded</code> →
+      <code>prepare</code> adds the id and clamps the quantity → the reducer appends to <code>state.items</code> → Immer
+      makes a new array → the store tells its subscribers → the table, the recommendations and the recipe badges
+      re-render → the listener shows a toast → <code>subscribe</code> saves it to localStorage." That is the entire
+      state layer of your project.
+    </div>
+  </section>
+
+  <!-- 10 -->
+  <section>
+    <h2><span class="num">10</span>The live coding task they love</h2>
+    <p>If they hand you a pen, it will be <b>"write a slice"</b>. Practise this until it takes four minutes:</p>
+    <pre><span class="k">import</span> { createSlice, nanoid } <span class="k">from</span> <span class="s">'@reduxjs/toolkit'</span>;
+
+<span class="k">const</span> todosSlice = <span class="f">createSlice</span>({
+  name: <span class="s">'todos'</span>,
+  initialState: { items: [] },
+  reducers: {
+    todoAdded: {
+      <span class="f">reducer</span>(state, action) { state.items.<span class="f">push</span>(action.payload); },
+      <span class="f">prepare</span>(text) { <span class="k">return</span> { payload: { id: <span class="f">nanoid</span>(), text, done: <span class="k">false</span> } }; }
+    },
+    <span class="f">todoToggled</span>(state, action) {
+      <span class="k">const</span> t = state.items.<span class="f">find</span>(i =&gt; i.id === action.payload);
+      <span class="k">if</span> (t) t.done = !t.done;
+    },
+    <span class="f">todoRemoved</span>(state, action) {
+      state.items = state.items.<span class="f">filter</span>(i =&gt; i.id !== action.payload);
+    }
+  }
+});
+
+<span class="k">export const</span> { todoAdded, todoToggled, todoRemoved } = todosSlice.actions;
+<span class="k">export default</span> todosSlice.reducer;
+
+<span class="c">// store.js</span>
+<span class="k">export const</span> store = <span class="f">configureStore</span>({ reducer: { todos: todosReducer } });
+
+<span class="c">// main.jsx:  &lt;Provider store={store}&gt;&lt;App /&gt;&lt;/Provider&gt;</span>
+<span class="c">// component: const items = useSelector(s =&gt; s.todos.items);</span>
+<span class="c">//            const dispatch = useDispatch(); dispatch(todoAdded('buy milk'));</span></pre>
+    <p>Then expect the follow-up: <b>"how would you fetch todos from an API?"</b> →
+    <code>createAsyncThunk</code>, which creates three actions automatically (<code>pending</code>,
+    <code>fulfilled</code>, <code>rejected</code>) that you handle in <code>extraReducers</code> to set
+    <code>status</code> and <code>error</code>, and the UI renders a skeleton, an error card with Retry, or the list.</p>
+  </section>
+
+  <div class="warn">
+    <strong>Read this once, honestly</strong>
+    You now have a state layer you did not write. Being able to recite this page is a start, but the examiner can point at
+    any line. Open <code>src/store/store.js</code> and <code>src/store/pantrySlice.js</code> side by side with this page
+    and match them up — it takes 20 minutes and it is the difference between describing the code and understanding it.
+  </div>
+
+  <p style="text-align:center;color:var(--muted);font-size:.84rem;margin-top:26px">
+    Companion: <code>VIVA_GUIDE.md</code> Part 7 (the full rubric answers) · Part 6 (Context theory, still examinable)
+  </p>
+</div>
+</body>
+</html>
